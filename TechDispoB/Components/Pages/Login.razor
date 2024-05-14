@@ -1,0 +1,49 @@
+﻿@page "/login"
+@using TechDispoB.Models
+@using TechDispoB.Services
+@inject IAppService AppService
+@inject NavigationManager NavManager
+
+<h3>Login</h3>
+
+<EditForm Model="@loginModel" OnValidSubmit="Submit">
+    <div class="form-group">
+        <label>Email</label>
+        <input type="email" @bind-value="loginModel.Email" class="form-control" placeholder="Entrez votre email">
+        <ValidationMessage For="@(() => loginModel.Email)" />
+    </div>
+    <div class="mt-2 form-group">
+        <label>Mot de passe</label>
+        <input type="password" @bind-value="loginModel.Password" class="form-control" placeholder="Mot de passe">
+        <ValidationMessage For="@(() => loginModel.Password)" />
+    </div>
+    <div class="text-center mt-2">
+        <button class="btn btn-primary" type="submit">Envoyé</button>
+    </div>
+</EditForm>
+
+@code {
+    LoginModel loginModel = new();
+
+    private async Task Submit()
+    {
+        try
+        {
+            var response = await AppService.AuthenticateUser(loginModel);
+
+            if (!string.IsNullOrWhiteSpace(response))
+            {
+                await App.Current.MainPage.DisplayAlert("Succès", "Utilisateur et mot de passe OK", "Ok");
+                NavManager.NavigateTo("/index");
+            }
+            else
+            {
+                await App.Current.MainPage.DisplayAlert("Erreur", "Mot de passe ou identifiant incorrect ou pas d'accès à l'URL", "Ok");
+            }
+        }
+        catch (Exception ex)
+        {
+            await App.Current.MainPage.DisplayAlert("Erreur", $"Une erreur s'est produite: {ex.Message}", "Ok");
+        }
+    }
+}

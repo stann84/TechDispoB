@@ -1,0 +1,84 @@
+﻿@page "/MissionPage"
+@using TechDispoB.Services;
+@using TechDispo.Models;
+@inject IAppService AppService;
+@inject NavigationManager NavigationManager
+
+<h3>Page des missions</h3>
+
+<div class="row">
+    @if (missions == null)
+    {
+        <div class="col-12">
+            <p>Pas de mission trouvé ...</p>
+        </div>
+    }
+    else
+    {
+        @foreach (var mission in missions)
+        {
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="card-title">@mission.Name</h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">@mission.Description</p>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">Ville : @mission.Ville</li>
+                            <li class="list-group-item">Distance : 35 km</li>
+                            <li class="list-group-item">Date : @mission.StartDate.ToShortDateString()</li>
+                        </ul>
+                        <div class="d-flex justify-content-between align-items-center mt-3">
+
+                            @*<a @onclick="@(()=>Console.WriteLine(mission.Name))" href="PopUpMission" class="btn btn-primary">Details</a>*@
+                            <a @onclick="@(()=> ShowDetailsMission(mission.Id))" class="btn btn-primary">Details</a>
+                            <a class="btn btn-secondary" href="#">Agenda</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+</div>
+
+@if (errorMessage != null)
+{
+    <p>@errorMessage</p>
+    Console.WriteLine(errorMessage);
+}
+
+
+@code {
+    List<Mission> missions;
+    // Mission detailMission;
+    // bool showPopUpMission;
+    string errorMessage = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            missions = await AppService.GetMissions();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+        }
+
+    }
+    void ShowDetailsMission(int missionId)
+    {
+        try
+        {
+            Console.WriteLine("mission id trouvé " + missionId);
+            NavigationManager.NavigateTo($"popupmission/{missionId}");
+        }
+        catch(Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
+    }
+
+
+}
