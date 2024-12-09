@@ -17,11 +17,11 @@ namespace TechDispoB.Services
             handler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
             return handler;
         }
-        public async Task<string> AuthenticateUser(LoginModel loginModel)
+        public async Task<string> Login(LoginModel loginModel)
         {
             using (var client = new HttpClient(CreateHttpClientHandler()))
             {
-                var url = $"{_baseUrl}{Apis.AuthenticateUser}";
+                var url = $"{_baseUrl}{Apis.Login}";
                 var serializedString = JsonConvert.SerializeObject(loginModel);
 
                 try
@@ -41,31 +41,6 @@ namespace TechDispoB.Services
                 return null;
             }
         }
-
-        //public async Task<List<Mission>> GetMissions()
-        //{
-        //    using var client = new HttpClient(CreateHttpClientHandler());
-        //    var response = await client.GetAsync($"{_baseUrl}/api/Mission/getmissions");
-        //    return response.IsSuccessStatusCode
-        //        ? await response.Content.ReadFromJsonAsync<List<Mission>>()
-        //        : null;
-        //}
-
-        //public async Task<List<Mission>> GetMissions2()
-        //{
-        //    using var client = new HttpClient(CreateHttpClientHandler());
-        //    var response = await client.GetAsync($"{_baseUrl}/api/Mission/getmissions");
-        //    if (response.IsSuccessStatusCode)
-        //    {
-        //        var content = await response.Content.ReadAsStringAsync();
-        //        return JsonConvert.DeserializeObject<List<Mission>>(content);
-        //    }
-        //    else
-        //    {
-        //        // handle the error case
-        //        return null;
-        //    }
-        //}
 
         public async Task<List<Mission>> GetMissions()
         {

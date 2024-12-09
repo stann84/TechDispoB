@@ -1,7 +1,39 @@
-﻿@page "/missionDetailPage"
+﻿@page "/missiondetailpage/{missionId:int}"
+@using TechDispo.Models
+@using TechDispoB.Services
+@inject IAppService AppService
 
-<h3>MissionDetailPage</h3>
+<h3>Détails de la Mission</h3>
+
+@if (mission == null)
+{
+    <p>Chargement des détails...</p>
+}
+else
+{
+    <div>
+        <h4>@mission.Name</h4>
+        <p>@mission.Description</p>
+        <p>Ville : @mission.Ville</p>
+        <p>Date : @mission.StartDate</p>
+    </div>
+}
 
 @code {
+    [Parameter]
+    public int MissionId { get; set; }
 
+    private Mission mission;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            mission = await AppService.GetMissionById(MissionId);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Erreur lors du chargement des détails de la mission : {ex.Message}");
+        }
+    }
 }

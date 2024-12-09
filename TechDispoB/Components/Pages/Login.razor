@@ -29,7 +29,7 @@
     {
         try
         {
-            var response = await AppService.AuthenticateUser(loginModel);
+            var response = await AppService.Login(loginModel);
 
             if (!string.IsNullOrWhiteSpace(response))
             {

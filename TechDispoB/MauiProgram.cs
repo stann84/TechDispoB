@@ -16,13 +16,15 @@ namespace TechDispoB
                 });
 
             builder.Services.AddMauiBlazorWebView();
-            builder.Services.AddScoped<IAppService, AppService>();
+
+            // Enregistrer AppService en tant que Singleton
+            builder.Services.AddSingleton<IAppService, AppService>();
 
 #if DEBUG
             builder.Services.AddBlazorWebViewDeveloperTools();
-    		builder.Logging.AddDebug();
+            builder.Logging.AddDebug();
 #endif
-            builder.Services.AddSingleton<IAppService, AppService>();
+
             return builder.Build();
         }
     }

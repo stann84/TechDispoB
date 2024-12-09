@@ -1,4 +1,4 @@
-﻿@page "/MissionPage"
+﻿@page "/missionpage"
 @using TechDispoB.Services;
 @using TechDispo.Models;
 @inject IAppService AppService;
@@ -50,7 +50,7 @@
 
 
 @code {
-    List<Mission> missions;
+    List<Mission>? missions;
     // Mission detailMission;
     // bool showPopUpMission;
     string errorMessage = "";
@@ -72,11 +72,12 @@
         try
         {
             Console.WriteLine("mission id trouvé " + missionId);
-            NavigationManager.NavigateTo($"popupmission/{missionId}");
+            //NavigationManager.NavigateTo($"popupmission/{missionId}");
+            NavigationManager.NavigateTo($"missiondetailpage/{missionId}");
         }
         catch(Exception ex)
         {
-            Console.WriteLine(ex);
+            Console.WriteLine($"Error navigating to mission details page: {ex.Message}");
         }
     }
 

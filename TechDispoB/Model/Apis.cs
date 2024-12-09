@@ -8,10 +8,10 @@ namespace TechDispoB.Model
 {
     internal class Apis
     {
-        public const string AuthenticateUser = "/api/account/login";
+        public const string Login = "/api/account/login";
         public const string ListMissions = "/api/Mission/getmissions";
-       // public const string GetMissionById = "api/Mission/mission/{id}";
-        public const string GetMissionById = "api/Mission/mission/{0}";
+        public const string GetMissionById = "api/Mission/mission/{id}";
+       // public const string GetMissionById = "api/Mission/mission/{0}";
 
     }
 }
