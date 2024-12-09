@@ -4,106 +4,79 @@ using TechDispo.Models;
 using TechDispoB.Model;
 using TechDispoB.Models;
 
-
 namespace TechDispoB.Services
 {
-    public class AppService : IAppService   
+    public class AppService : IAppService
     {
-        private string _baseUrl = "https://techdispoweb.azurewebsites.net";
+        private readonly HttpClient _httpClient;
 
-        private HttpClientHandler CreateHttpClientHandler() // pour passer la certification
+        public AppService()
         {
-            var handler = new HttpClientHandler();
-            handler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
-            return handler;
+            var handler = new HttpClientHandler
+            {
+                ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true
+            };
+
+            _httpClient = new HttpClient(handler)
+            {
+                BaseAddress = new Uri("https://techdispoweb.azurewebsites.net")
+            };
         }
+
+        private async Task<T?> SendRequestAsync<T>(HttpMethod method, string url, object? body = null)
+        {
+            try
+            {
+                using var request = new HttpRequestMessage(method, url);
+
+                if (body != null)
+                {
+                    var json = JsonConvert.SerializeObject(body);
+                    request.Content = new StringContent(json, Encoding.UTF8, "application/json");
+                }
+
+                var response = await _httpClient.SendAsync(request);
+                response.EnsureSuccessStatusCode();
+
+                var responseString = await response.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<T>(responseString);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Erreur lors de la requête {method} vers {url}: {ex.Message}");
+                return default;
+            }
+        }
+
         public async Task<string> Login(LoginModel loginModel)
         {
-            using (var client = new HttpClient(CreateHttpClientHandler()))
-            {
-                var url = $"{_baseUrl}{Apis.Login}";
-                var serializedString = JsonConvert.SerializeObject(loginModel);
-
-                try
-                {
-                    var response = await client.PostAsync(url, new StringContent(serializedString, Encoding.UTF8, "application/json"));
-                    if (response.IsSuccessStatusCode)
-                    {
-                        var responseString = await response.Content.ReadAsStringAsync();
-                        return responseString; // Vous pouvez ajuster cela pour retourner un message ou une structure plus appropriée
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex.ToString());
-                }
-
-                return null;
-            }
+            var result = await SendRequestAsync<string>(HttpMethod.Post, Apis.Login, loginModel);
+            return result ?? "Échec de la connexion";
         }
 
         public async Task<List<Mission>> GetMissions()
         {
-            using (var client = new HttpClient(CreateHttpClientHandler()))
-            {
-                var url = $"{_baseUrl}{Apis.ListMissions}";
-                var response = await client.GetAsync(url);
-
-                if (response.IsSuccessStatusCode)
-                {
-                    var content = await response.Content.ReadAsStringAsync();
-                    return JsonConvert.DeserializeObject<List<Mission>>(content);
-                }
-                else
-                {
-                    // handle the error case
-                    return null;
-                }
-            }
+            var result = await SendRequestAsync<List<Mission>>(HttpMethod.Get, Apis.ListMissions);
+            return result ?? new List<Mission>();
         }
 
         public async Task<Mission> GetMissionById(int missionId)
         {
-            using (var client = new HttpClient(CreateHttpClientHandler()))
-            {
-                var url = $"{_baseUrl}/api/Mission/mission/{missionId}";
-                var response = await client.GetAsync(url);
-
-                if (response.IsSuccessStatusCode)
-                {
-                    var content = await response.Content.ReadAsStringAsync();
-                    return JsonConvert.DeserializeObject<Mission>(content);
-                }
-                else
-                {
-                    // handle the error case
-                    return null;
-                }
-            }
+            var result = await SendRequestAsync<Mission>(HttpMethod.Get, $"/api/Mission/mission/{missionId}");
+            return result ?? new Mission();
         }
+
         public async Task<bool> CanConnectToDatabase()
         {
             try
             {
-                using (var client = new HttpClient(CreateHttpClientHandler()))
-                {
-                    var url = $"{_baseUrl}/api/login"; 
-                    var response = await client.GetAsync(url);
-                    return response.IsSuccessStatusCode;
-                }
+                var response = await _httpClient.GetAsync("/api/login");
+                return response.IsSuccessStatusCode;
             }
             catch
             {
                 return false;
             }
         }
-
-
-
-
-
-
-
-
     }
 }
