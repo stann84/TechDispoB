@@ -4,13 +4,13 @@
 @inject IAppService AppService;
 @inject NavigationManager NavigationManager
 
-<h3>Page des missions</h3>
+<h3>Missions</h3>
 
 <div class="row">
     @if (missions == null)
     {
         <div class="col-12">
-            <p>Pas de mission trouvé ...</p>
+            <p>Chargement des missions ...</p>
         </div>
     }
     else

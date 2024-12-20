@@ -8,42 +8,63 @@
 
 <EditForm Model="@loginModel" OnValidSubmit="Submit">
     <div class="form-group">
-        <label>Email</label>
-        <input type="email" @bind-value="loginModel.Email" class="form-control" placeholder="Entrez votre email">
+        <label for="email">Email</label>
+        <input id="email" type="email" @bind-value="loginModel.Email" class="form-control" placeholder="Entrez votre email" required>
         <ValidationMessage For="@(() => loginModel.Email)" />
     </div>
     <div class="mt-2 form-group">
-        <label>Mot de passe</label>
-        <input type="password" @bind-value="loginModel.Password" class="form-control" placeholder="Mot de passe">
+        <label for="password">Mot de passe</label>
+        <input id="password" type="password" @bind-value="loginModel.Password" class="form-control" placeholder="Mot de passe" required>
         <ValidationMessage For="@(() => loginModel.Password)" />
     </div>
+    <div class="mt-2 form-group form-check">
+        <input id="rememberMe" type="checkbox" @bind-value="loginModel.RememberMe" class="form-check-input">
+        <label for="rememberMe" class="form-check-label">Se souvenir de moi</label>
+    </div>
     <div class="text-center mt-2">
-        <button class="btn btn-primary" type="submit">Envoyé</button>
+        <button class="btn btn-primary" type="submit">Envoyer</button>
     </div>
 </EditForm>
 
 @code {
-    LoginModel loginModel = new();
+    private LoginModel loginModel = new();
 
     private async Task Submit()
     {
         try
         {
+            // Appel à l'API pour la connexion
             var response = await AppService.Login(loginModel);
 
             if (!string.IsNullOrWhiteSpace(response))
             {
-                await App.Current.MainPage.DisplayAlert("Succès", "Utilisateur et mot de passe OK", "Ok");
-                NavManager.NavigateTo("/index");
+                // Succès de la connexion
+                await ShowAlert("Succès", "Utilisateur et mot de passe validés !");
+                NavManager.NavigateTo("/");
             }
             else
             {
-                await App.Current.MainPage.DisplayAlert("Erreur", "Mot de passe ou identifiant incorrect ou pas d'accès à l'URL", "Ok");
+                // Échec de la connexion
+                await ShowAlert("Erreur", "Mot de passe ou identifiant incorrect ou problème d'accès à l'URL.");
             }
         }
         catch (Exception ex)
         {
-            await App.Current.MainPage.DisplayAlert("Erreur", $"Une erreur s'est produite: {ex.Message}", "Ok");
+            // Gestion des exceptions
+            await ShowAlert("Erreur", $"Une erreur s'est produite : {ex.Message}");
+            Console.WriteLine($"Erreur : {ex.Message}");
+        }
+    }
+
+    private async Task ShowAlert(string title, string message)
+    {
+        if (App.Current?.MainPage != null)
+        {
+            await App.Current.MainPage.DisplayAlert(title, message, "OK");
+        }
+        else
+        {
+            Console.WriteLine($"{title}: {message}");
         }
     }
 }
