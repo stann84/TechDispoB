@@ -62,7 +62,7 @@ namespace TechDispoB.Services
 
         public async Task<Mission> GetMissionById(int missionId)
         {
-            var result = await SendRequestAsync<Mission>(HttpMethod.Get, $"/api/Mission/mission/{missionId}");
+            var result = await SendRequestAsync<Mission>(HttpMethod.Get, $"/api/mission/mission/{missionId}");
             return result ?? new Mission();
         }
 
@@ -70,7 +70,7 @@ namespace TechDispoB.Services
         {
             try
             {
-                var response = await _httpClient.GetAsync("/api/login");
+                var response = await _httpClient.GetAsync("/api/connectdatabase");
                 return response.IsSuccessStatusCode;
             }
             catch
