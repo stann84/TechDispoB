@@ -12,15 +12,7 @@ namespace TechDispoB.Services
 
         public AppService()
         {
-            var handler = new HttpClientHandler
-            {
-                ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true
-            };
-
-            _httpClient = new HttpClient(handler)
-            {
-                BaseAddress = new Uri("https://techdispoweb.azurewebsites.net")
-            };
+            _httpClient = HttpClientService.CreateHttpClient();
         }
 
         private async Task<T?> SendRequestAsync<T>(HttpMethod method, string url, object? body = null)
