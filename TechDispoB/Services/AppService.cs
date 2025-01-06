@@ -19,7 +19,11 @@ namespace TechDispoB.Services
 
             _httpClient = new HttpClient(handler)
             {
-                BaseAddress = new Uri("https://techdispoweb.azurewebsites.net")
+                //BaseAddress = new Uri("https://techdispoweb.azurewebsites.net")
+                //BaseAddress = new Uri("http://10.0.2.2:45461")
+                //BaseAddress = new Uri("http://82.64.246.94:45461")
+                //BaseAddress = new Uri("http://localhost:45461")
+                BaseAddress = new Uri("https://be27-2a01-e0a-1d4-b530-3012-bc1-c882-58d8.ngrok-free.app")
             };
         }
 
