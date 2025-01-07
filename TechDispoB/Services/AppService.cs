@@ -1,7 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System.Text;
 using TechDispo.Models;
-using TechDispoB.Model;
 using TechDispoB.Models;
 
 namespace TechDispoB.Services
@@ -40,10 +39,17 @@ namespace TechDispoB.Services
             }
         }
 
-        public async Task<string> Login(LoginModel loginModel)
+        public async Task<string?> Login(LoginModel loginModel)
         {
-            var result = await SendRequestAsync<string>(HttpMethod.Post, Apis.Login, loginModel);
-            return result ?? "Échec de la connexion";
+            // Envoyer les données du modèle au serveur via une requête POST
+            var result = await SendRequestAsync<string>(
+                HttpMethod.Post,
+
+                Apis.Login,  // Endpoint défini dans votre API
+                loginModel
+            );
+
+            return result; // Renvoie le token ou un message en fonction de l'API
         }
 
         public async Task<List<Mission>> GetMissions()
