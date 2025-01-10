@@ -17,7 +17,7 @@ namespace TechDispoB.Services
 
             return new HttpClient(handler)
             {
-                BaseAddress = new Uri("https://be27-2a01-e0a-1d4-b530-3012-bc1-c882-58d8.ngrok-free.app")
+                BaseAddress = new Uri(" https://0f11-2a01-e0a-1d4-b530-c199-3df7-5af7-56a.ngrok-free.app")
             };
         }
     }

@@ -1,4 +1,4 @@
-﻿@page "/login"
+﻿@page "/"
 @using TechDispoB.Models
 @using TechDispoB.Services
 @inject IAppService AppService
@@ -31,30 +31,23 @@
 
     private async Task Submit()
     {
-        try
-        {
-            // Appel à l'API pour la connexion
-            var response = await AppService.Login(loginModel);
+        // Appelle le service pour effectuer la connexion
+        var loginResponse = await AppService.Login(loginModel);
 
-            if (!string.IsNullOrWhiteSpace(response))
-            {
-                // Succès de la connexion
-                await ShowAlert("Succès", "Utilisateur et mot de passe validés !");
-                NavManager.NavigateTo("/");
-            }
-            else
-            {
-                // Échec de la connexion
-                await ShowAlert("Erreur", "Mot de passe ou identifiant incorrect ou problème d'accès à l'URL.");
-            }
-        }
-        catch (Exception ex)
+        if (loginResponse != null)
         {
-            // Gestion des exceptions
-            await ShowAlert("Erreur", $"Une erreur s'est produite : {ex.Message}");
-            Console.WriteLine($"Erreur : {ex.Message}");
+            // Récupère les informations de l'utilisateur à partir de la réponse
+            var user = loginResponse.User;
+            Console.WriteLine($"Utilisateur : {user.Username}, Ville : {user.City}");
+            NavManager.NavigateTo("home");
+        }
+        else
+        {
+            await ShowAlert("Erreur", "Identifiant ou mot de passe incorrect");
+            Console.WriteLine("Échec de la connexion.");
         }
     }
+
 
     private async Task ShowAlert(string title, string message)
     {

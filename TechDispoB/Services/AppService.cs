@@ -1,5 +1,7 @@
-﻿using Newtonsoft.Json;
+﻿
+using System.Net.Http.Json;
 using System.Text;
+using System.Text.Json;
 using TechDispo.Models;
 using TechDispoB.Models;
 
@@ -8,6 +10,7 @@ namespace TechDispoB.Services
     public class AppService : IAppService
     {
         private readonly HttpClient _httpClient;
+        private JsonSerializerOptions? _jsonOptions;
 
         public AppService()
         {
@@ -22,7 +25,7 @@ namespace TechDispoB.Services
 
                 if (body != null)
                 {
-                    var json = JsonConvert.SerializeObject(body);
+                    var json = System.Text.Json.JsonSerializer.Serialize(body);
                     request.Content = new StringContent(json, Encoding.UTF8, "application/json");
                 }
 
@@ -30,7 +33,17 @@ namespace TechDispoB.Services
                 response.EnsureSuccessStatusCode();
 
                 var responseString = await response.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<T>(responseString);
+
+                // Gestion des erreurs de désérialisation
+                try
+                {
+                    return JsonSerializer.Deserialize<T>(responseString, _jsonOptions);
+                }
+                catch (JsonException jsonEx)
+                {
+                    Console.WriteLine($"Erreur de désérialisation : {jsonEx.Message}");
+                    return default;
+                }
             }
             catch (Exception ex)
             {
@@ -39,18 +52,41 @@ namespace TechDispoB.Services
             }
         }
 
-        public async Task<string?> Login(LoginModel loginModel)
+
+        public async Task<LoginResponse?> Login(LoginModel loginModel)
         {
-            // Envoyer les données du modèle au serveur via une requête POST
-            var result = await SendRequestAsync<string>(
-                HttpMethod.Post,
+            try
+            {
+                // Envoyer la requête POST avec un corps JSON
+                var response = await _httpClient.PostAsJsonAsync("/auth/login", loginModel);
+                Console.WriteLine (response);
+                Console.WriteLine($"Email: {loginModel.Email}, Password: {loginModel.Password}, RememberMe: {loginModel.RememberMe}");
+                var json = System.Text.Json.JsonSerializer.Serialize(loginModel);
+                Console.WriteLine($"JSON envoyé : {json}");
 
-                Apis.Login,  // Endpoint défini dans votre API
-                loginModel
-            );
+                // Vérification si le status de la réponse est un succès
+                if (!response.IsSuccessStatusCode)
+                {
+                    var errorContent = await response.Content.ReadAsStringAsync();
+                    Console.WriteLine($"Échec de la connexion : {response.StatusCode}, Contenu de la réponse : {errorContent}");
+                    return null;
+                }
 
-            return result; // Renvoie le token ou un message en fonction de l'API
+                // Désérialisation de la réponse JSON en LoginResponse
+                return await response.Content.ReadFromJsonAsync<LoginResponse>(new System.Text.Json.JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true // Pour gérer les différences de casse dans les noms de propriétés
+                });
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Erreur lors de la connexion : {ex.Message}");
+                return null;
+            }
         }
+
+
 
         public async Task<List<Mission>> GetMissions()
         {
