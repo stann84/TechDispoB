@@ -32,6 +32,15 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <AndroidResource Remove="Controller\**" />
+	  <Compile Remove="Controller\**" />
+	  <Content Remove="Controller\**" />
+	  <EmbeddedResource Remove="Controller\**" />
+	  <MauiXaml Remove="Controller\**" />
+	  <None Remove="Controller\**" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.5" />
 		<PackageReference Include="Microsoft.Maui.Controls" Version="8.0.40" />
 		<PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="8.0.40" />
@@ -44,10 +53,6 @@
 		<Reference Include="Biblioteque">
 			<HintPath>D:\ProjetNetCore\Projet\TechDispo\Biblioteque\bin\Debug\net6.0\Biblioteque.dll</HintPath>
 		</Reference>
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Folder Include="Controller\" />
 	</ItemGroup>
 
 </Project>

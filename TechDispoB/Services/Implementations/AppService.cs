@@ -1,11 +1,11 @@
-﻿
-using System.Net.Http.Json;
+﻿using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
 using TechDispo.Models;
-using TechDispoB.Models;
+using TechDispoB.Models;  
 
-namespace TechDispoB.Services
+
+namespace TechDispoB.Services.Implementations
 {
     public class AppService : IAppService
     {
@@ -25,7 +25,7 @@ namespace TechDispoB.Services
 
                 if (body != null)
                 {
-                    var json = System.Text.Json.JsonSerializer.Serialize(body);
+                    var json = JsonSerializer.Serialize(body);
                     request.Content = new StringContent(json, Encoding.UTF8, "application/json");
                 }
 
@@ -59,9 +59,9 @@ namespace TechDispoB.Services
             {
                 // Envoyer la requête POST avec un corps JSON
                 var response = await _httpClient.PostAsJsonAsync("/auth/login", loginModel);
-                Console.WriteLine (response);
+                Console.WriteLine(response);
                 Console.WriteLine($"Email: {loginModel.Email}, Password: {loginModel.Password}, RememberMe: {loginModel.RememberMe}");
-                var json = System.Text.Json.JsonSerializer.Serialize(loginModel);
+                var json = JsonSerializer.Serialize(loginModel);
                 Console.WriteLine($"JSON envoyé : {json}");
 
                 // Vérification si le status de la réponse est un succès
@@ -73,10 +73,19 @@ namespace TechDispoB.Services
                 }
 
                 // Désérialisation de la réponse JSON en LoginResponse
-                return await response.Content.ReadFromJsonAsync<LoginResponse>(new System.Text.Json.JsonSerializerOptions
+                var loginResponse = await response.Content.ReadFromJsonAsync<LoginResponse>(new JsonSerializerOptions
                 {
                     PropertyNameCaseInsensitive = true // Pour gérer les différences de casse dans les noms de propriétés
                 });
+
+                if (loginResponse != null && !string.IsNullOrEmpty(loginResponse.Token))
+                {
+                    // Stocker le jeton dans SecureStorage
+                    await SecureStorage.SetAsync("auth_token", loginResponse.Token);
+                    Console.WriteLine("Jeton JWT stocké avec succès !");
+                }
+
+                return loginResponse;
 
             }
             catch (Exception ex)
@@ -86,18 +95,14 @@ namespace TechDispoB.Services
             }
         }
 
-
-
-        public async Task<List<Mission>> GetMissions()
+        public async Task<List<MissionDto>> GetMissions()
         {
-            var result = await SendRequestAsync<List<Mission>>(HttpMethod.Get, Apis.ListMissions);
-            return result ?? new List<Mission>();
+            return await _httpClient.GetFromJsonAsync<List<MissionDto>>(Apis.ListMissions) ?? new List<MissionDto>();
         }
-
-        public async Task<Mission> GetMissionById(int missionId)
+        public async Task<MissionDto> GetMissionById(int missionId)
         {
-            var result = await SendRequestAsync<Mission>(HttpMethod.Get, $"/api/mission/mission/{missionId}");
-            return result ?? new Mission();
+            var result = await SendRequestAsync<MissionDto>(HttpMethod.Get, $"/api/mission/mission/{missionId}");
+            return result ?? new MissionDto();
         }
 
         public async Task<bool> CanConnectToDatabase()

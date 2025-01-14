@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TechDispoB.Services
+namespace TechDispoB.Services.Implementations
 {
     public static class HttpClientService
     {
@@ -17,7 +17,7 @@ namespace TechDispoB.Services
 
             return new HttpClient(handler)
             {
-                BaseAddress = new Uri(" https://0f11-2a01-e0a-1d4-b530-c199-3df7-5af7-56a.ngrok-free.app")
+                BaseAddress = new Uri("https://fefe-2a01-e0a-1d4-b530-ade8-cbb0-97de-56fd.ngrok-free.app")
             };
         }
     }
