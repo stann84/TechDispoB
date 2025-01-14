@@ -1,5 +1,4 @@
-﻿using TechDispo.Models;
-using TechDispoB.Models;
+﻿using TechDispoB.Models;
 
 namespace TechDispoB.Services
 {
