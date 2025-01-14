@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using TechDispoB.Services;
+using TechDispoB.Services.Implementations;
 
 namespace TechDispoB
 {

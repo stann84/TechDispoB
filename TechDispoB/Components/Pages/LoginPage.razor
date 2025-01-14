@@ -1,0 +1,63 @@
+﻿@page "/"
+@using TechDispoB.Models
+@using TechDispoB.Services
+@inject IAppService AppService
+@inject NavigationManager NavManager
+
+<h3>Login</h3>
+
+<EditForm Model="@loginModel" OnValidSubmit="Submit">
+    <div class="form-group">
+        <label for="email">Email</label>
+        <input id="email" type="email" @bind-value="loginModel.Email" class="form-control" placeholder="Entrez votre email" required>
+        <ValidationMessage For="@(() => loginModel.Email)" />
+    </div>
+    <div class="mt-2 form-group">
+        <label for="password">Mot de passe</label>
+        <input id="password" type="password" @bind-value="loginModel.Password" class="form-control" placeholder="Mot de passe" required>
+        <ValidationMessage For="@(() => loginModel.Password)" />
+    </div>
+    <div class="mt-2 form-group form-check">
+        <input id="rememberMe" type="checkbox" @bind-value="loginModel.RememberMe" class="form-check-input">
+        <label for="rememberMe" class="form-check-label">Se souvenir de moi</label>
+    </div>
+    <div class="text-center mt-2">
+        <button class="btn btn-primary" type="submit">Envoyer</button>
+    </div>
+</EditForm>
+
+@code {
+    private LoginModel loginModel = new();
+
+    private async Task Submit()
+    {
+        // Appelle le service pour effectuer la connexion
+        var loginResponse = await AppService.Login(loginModel);
+
+        if (loginResponse != null)
+        {
+            // Récupère les informations de l'utilisateur à partir de la réponse
+            var user = loginResponse.User;
+            Console.WriteLine($"Utilisateur : {user.Username}, Ville : {user.City}");
+            NavManager.NavigateTo(AppRoutes.Missions);
+        }
+        else
+        {
+            await ShowAlert("Erreur", "Identifiant ou mot de passe incorrect");
+            Console.WriteLine("Échec de la connexion.");
+        }
+    }
+
+
+    private async Task ShowAlert(string title, string message)
+    {
+        if (App.Current?.MainPage != null)
+        {
+            await App.Current.MainPage.DisplayAlert(title, message, "OK");
+        }
+        else
+        {
+            Console.WriteLine($"{title}: {message}");
+        }
+    }
+}
