@@ -1,7 +1,6 @@
 ﻿using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
-using TechDispo.Models;
 using TechDispoB.Models;  
 
 
@@ -10,48 +9,11 @@ namespace TechDispoB.Services.Implementations
     public class AppService : IAppService
     {
         private readonly HttpClient _httpClient;
-        private JsonSerializerOptions? _jsonOptions;
 
         public AppService()
         {
             _httpClient = HttpClientService.CreateHttpClient();
         }
-
-        private async Task<T?> SendRequestAsync<T>(HttpMethod method, string url, object? body = null)
-        {
-            try
-            {
-                using var request = new HttpRequestMessage(method, url);
-
-                if (body != null)
-                {
-                    var json = JsonSerializer.Serialize(body);
-                    request.Content = new StringContent(json, Encoding.UTF8, "application/json");
-                }
-
-                var response = await _httpClient.SendAsync(request);
-                response.EnsureSuccessStatusCode();
-
-                var responseString = await response.Content.ReadAsStringAsync();
-
-                // Gestion des erreurs de désérialisation
-                try
-                {
-                    return JsonSerializer.Deserialize<T>(responseString, _jsonOptions);
-                }
-                catch (JsonException jsonEx)
-                {
-                    Console.WriteLine($"Erreur de désérialisation : {jsonEx.Message}");
-                    return default;
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Erreur lors de la requête {method} vers {url}: {ex.Message}");
-                return default;
-            }
-        }
-
 
         public async Task<LoginResponse?> Login(LoginModel loginModel)
         {
