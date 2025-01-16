@@ -1,13 +1,13 @@
-﻿<Router AppAssembly="@typeof(MauiProgram).Assembly">
+﻿@using TechDispoB
+
+<Router AppAssembly="@typeof(MauiProgram).Assembly">
     <Found Context="routeData">
         <RouteView RouteData="@routeData" DefaultLayout="@typeof(Layout.MainLayout)" />
         <FocusOnNavigate RouteData="@routeData" Selector="h1" />
     </Found>
     <NotFound>
-       
-            <h1>Page non trouvée</h1>
-            <p>La page que vous recherchez n'existe pas.</p>
-            <a href="/home-page">Retour à la page d'accueil</a>
-        
+        <h1>Page non trouvée</h1>
+        <p>La page que vous recherchez n'existe pas.</p>
+        <a href="@AppRoutes.Home">Retour à la page d'accueil</a>
     </NotFound>
 </Router>

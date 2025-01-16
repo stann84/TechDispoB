@@ -1,4 +1,4 @@
-﻿@page "/"
+﻿@page "/Login-page"
 @using TechDispoB.Models
 @using TechDispoB.Services
 @inject IAppService AppService
@@ -10,7 +10,7 @@
     <div class="form-group">
         <label for="email">Email</label>
         <input id="email" type="email" @bind-value="loginModel.Email" class="form-control" placeholder="Entrez votre email" required>
-        <ValidationMessage For="@(() => loginModel.Email)" />
+        ValidationMessage For="@(() => loginModel.Email)" />
     </div>
     <div class="mt-2 form-group">
         <label for="password">Mot de passe</label>
