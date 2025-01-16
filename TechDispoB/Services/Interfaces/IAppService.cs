@@ -9,6 +9,6 @@ namespace TechDispoB.Services
         public Task<List<MissionDto>> GetMissions();
         public Task<MissionDto> GetMissionById(int missionId);
         public Task<bool> CanConnectToDatabase();
-
+        public Task<bool> ValidateToken(string token);
     }
 }

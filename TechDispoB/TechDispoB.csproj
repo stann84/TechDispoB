@@ -14,12 +14,7 @@
 		<ApplicationId>com.companyname.techdispob</ApplicationId>
 		<ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
 		<ApplicationVersion>1</ApplicationVersion>
-		<!--<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">14.2</SupportedOSPlatformVersion>
-		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">14.0</SupportedOSPlatformVersion>-->
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">24.0</SupportedOSPlatformVersion>
-		<!--<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</SupportedOSPlatformVersion>
-		<TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
-		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tizen'">6.5</SupportedOSPlatformVersion>-->
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -31,28 +26,37 @@
 		<MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
 	</ItemGroup>
 
+	<!-- Suppress unused or unnecessary resources -->
 	<ItemGroup>
-	  <AndroidResource Remove="Controller\**" />
-	  <Compile Remove="Controller\**" />
-	  <Content Remove="Controller\**" />
-	  <EmbeddedResource Remove="Controller\**" />
-	  <MauiXaml Remove="Controller\**" />
-	  <None Remove="Controller\**" />
+		<AndroidResource Remove="Controller\**" />
+		<Compile Remove="Controller\**" />
+		<Content Remove="Controller\**" />
+		<EmbeddedResource Remove="Controller\**" />
+		<MauiXaml Remove="Controller\**" />
+		<None Remove="Controller\**" />
 	</ItemGroup>
 
+	<!-- Include AppShell.xaml and link it correctly -->
+
 	<ItemGroup>
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Analyzers" Version="8.0.5" />
 		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.5" />
 		<PackageReference Include="Microsoft.Maui.Controls" Version="8.0.40" />
 		<PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="8.0.40" />
-		<PackageReference Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="8.0.40" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="9.0.30" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.0" />
-		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 	</ItemGroup>
 
+	<!-- Add reference to Biblioteque.dll -->
 	<ItemGroup>
 		<Reference Include="Biblioteque">
 			<HintPath>D:\ProjetNetCore\Projet\TechDispo\Biblioteque\bin\Debug\net6.0\Biblioteque.dll</HintPath>
 		</Reference>
+	</ItemGroup>
+	<ItemGroup>
+	  <MauiXaml Update="AppShell.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	</ItemGroup>
 
 </Project>

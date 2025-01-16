@@ -1,6 +1,9 @@
 ﻿using Microsoft.Extensions.Logging;
 using TechDispoB.Services;
 using TechDispoB.Services.Implementations;
+using Microsoft.Maui.Hosting;
+using Microsoft.Maui.Controls.Hosting;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace TechDispoB
 {
@@ -16,15 +19,15 @@ namespace TechDispoB
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                 });
 
-            builder.Services.AddMauiBlazorWebView();
-
-            // Enregistrer AppService en tant que Singleton
+            // Enregistrer les services
             builder.Services.AddSingleton<IAppService, AppService>();
 
-#if DEBUG
-            builder.Services.AddBlazorWebViewDeveloperTools();
+            // Nécessaire pour Blazor dans .NET MAUI
+            builder.Services.AddMauiBlazorWebView();
+
+
             builder.Logging.AddDebug();
-#endif
+
 
             return builder.Build();
         }

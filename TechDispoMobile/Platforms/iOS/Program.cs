@@ -1,4 +1,7 @@
-﻿namespace TechDispoB
+﻿using ObjCRuntime;
+using UIKit;
+
+namespace TechDispoMobile
 {
     public class Program
     {

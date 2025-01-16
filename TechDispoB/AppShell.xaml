@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Shell xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+       xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+       xmlns:local="clr-namespace:TechDispoB.Components.Pages"
+       x:Class="TechDispoB.AppShell"
+       Title="AppShell">
+
+    <!-- Définir les routes de navigation -->
+    <FlyoutItem Title="Home">
+        <ShellContent ContentTemplate="{DataTemplate local:HomePage}" Route="home-page" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="Missions">
+        <ShellContent ContentTemplate="{DataTemplate local:MissionListPage}" Route="missions-list-page" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="Login">
+        <ShellContent ContentTemplate="{DataTemplate local:LoginPage}" Route="login-page" />
+    </FlyoutItem>
+
+</Shell>

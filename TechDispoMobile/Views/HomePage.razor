@@ -1,0 +1,24 @@
+﻿@page "/home-page"
+@using TechDispoMobile.Services
+@inject IAppService AppService
+
+<h1>Accueil</h1>
+
+<h3>Base de donnée: @connectionMessage</h3>
+
+@code {
+    private string connectionMessage = "En attente de la vérification...";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CheckDatabaseConnection();
+    }
+
+    private async Task CheckDatabaseConnection()
+    {
+        bool canConnect = await AppService.CanConnectToDatabase();
+        connectionMessage = canConnect ? "Connecté à la base de données." : "Impossible de se connecter à la base de données.";
+    }
+
+
+}
