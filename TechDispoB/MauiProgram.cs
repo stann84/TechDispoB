@@ -16,14 +16,14 @@ namespace TechDispoB
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                 });
 
-            builder.Services.AddMauiBlazorWebView();
+           // builder.Services.AddMauiBlazorWebView();
 
             // Enregistrer AppService en tant que Singleton
             builder.Services.AddSingleton<IAppService, AppService>();
             builder.Services.AddSingleton<AuthState>();
-
+            builder.Services.AddSingleton<AppShell>();
 #if DEBUG
-            builder.Services.AddBlazorWebViewDeveloperTools();
+            //builder.Services.AddBlazorWebViewDeveloperTools();
             builder.Logging.AddDebug();
 #endif
 

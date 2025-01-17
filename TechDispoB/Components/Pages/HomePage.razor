@@ -25,7 +25,8 @@
     private async Task GoToMissions()
     {
         Console.WriteLine("Navigation test vers /missions");
-        Navigation.NavigateTo(AppRoutes.Missions);
+        // Navigation.NavigateTo(AppRoutes.Missions);
+        await Shell.Current.GoToAsync("//missions-list-page");
     }
 
 }
