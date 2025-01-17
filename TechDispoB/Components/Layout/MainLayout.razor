@@ -1,4 +1,5 @@
 ﻿@inherits LayoutComponentBase
+@inject NavigationManager NavManager
 
 <div class="page">
     <div class="sidebar">
@@ -15,3 +16,22 @@
         </article>
     </main>
 </div>
+
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        var token = await SecureStorage.GetAsync("token");
+
+        if (string.IsNullOrEmpty(token))
+        {
+            Console.WriteLine("🔒 Aucun utilisateur connecté. Redirection vers Login.");
+            NavManager.NavigateTo(AppRoutes.Login);
+        }
+        else
+        {
+            Console.WriteLine("🔑 Utilisateur authentifié. Accès à l'application.");
+        }
+    }
+}
+

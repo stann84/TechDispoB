@@ -20,6 +20,7 @@ namespace TechDispoB
 
             // Enregistrer AppService en tant que Singleton
             builder.Services.AddSingleton<IAppService, AppService>();
+            builder.Services.AddSingleton<AuthState>();
 
 #if DEBUG
             builder.Services.AddBlazorWebViewDeveloperTools();

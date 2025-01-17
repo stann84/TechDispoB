@@ -1,4 +1,5 @@
 ﻿@page "/Login-page"
+@using Microsoft.Maui.Storage
 @using TechDispoB.Models
 @using TechDispoB.Services
 @inject IAppService AppService
@@ -10,7 +11,7 @@
     <div class="form-group">
         <label for="email">Email</label>
         <input id="email" type="email" @bind-value="loginModel.Email" class="form-control" placeholder="Entrez votre email" required>
-        ValidationMessage For="@(() => loginModel.Email)" />
+        <ValidationMessage For="@(() => loginModel.Email)" />
     </div>
     <div class="mt-2 form-group">
         <label for="password">Mot de passe</label>
@@ -34,8 +35,9 @@
         // Appelle le service pour effectuer la connexion
         var loginResponse = await AppService.Login(loginModel);
 
-        if (loginResponse != null)
+        if (loginResponse != null && !string.IsNullOrEmpty(loginResponse.Token))
         {
+            await SecureStorage.SetAsync("token", loginResponse.Token);
             // Récupère les informations de l'utilisateur à partir de la réponse
             var user = loginResponse.User;
             Console.WriteLine($"Utilisateur : {user.Username}, Ville : {user.City}");

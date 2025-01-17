@@ -3,44 +3,55 @@
 @using TechDispoB.Services;
 @inject IAppService AppService;
 @inject NavigationManager NavigationManager
+@inject AuthState AuthState
 
-<h3>Missions</h3>
+@if (!isAuthenticated)
+{
+    <h3>Accès refusé</h3>
+    <p>Vous devez être connecté pour accéder à cette page.</p>
+}   
+else 
+{
+    <h3>Missions</h3>
 
-<div class="row">
-    @if (missions == null)
-    {
-        <div class="col-12">
-            <p>Chargement des missions ...</p>
-        </div>
-    }
-    else
-    {
-        @foreach (var mission in missions)
+    <div class="row">
+        @if (missions == null)
         {
-            <div class="col-12 col-md-6 col-lg-4">
-                <div class="card mb-4">
-                    <div class="card-header">
-                        <h5 class="card-title">@mission.Name</h5>
-                    </div>
-                    <div class="card-body">
-                        <p class="card-text">@mission.Description</p>
-                        <ul class="list-group list-group-flush">
-                            <li class="list-group-item">Ville : @mission.Ville</li>
-                            <li class="list-group-item">Distance : 35 km</li>
-                            <li class="list-group-item">Date : @mission.StartDate.ToShortDateString()</li>
-                        </ul>
-                        <div class="d-flex justify-content-between align-items-center mt-3">
+            <div class="col-12">
+                <p>Chargement des missions ...</p>
+            </div>
+        }
+        else
+        {
+            @foreach (var mission in missions)
+            {
+                <div class="col-12 col-md-6 col-lg-4">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="card-title">@mission.Name</h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text">@mission.Description</p>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item">Ville : @mission.Ville</li>
+                                <li class="list-group-item">Distance : 35 km</li>
+                                <li class="list-group-item">Date : @mission.StartDate.ToShortDateString()</li>
+                            </ul>
+                            <div class="d-flex justify-content-between align-items-center mt-3">
 
-                            @*<a @onclick="@(()=>Console.WriteLine(mission.Name))" href="PopUpMission" class="btn btn-primary">Details</a>*@
-                            <a @onclick="@(()=> ShowDetailsMission(mission.Id))" class="btn btn-primary">Details</a>
-                            <a class="btn btn-secondary" href="#">Agenda</a>
+                                @*<a @onclick="@(()=>Console.WriteLine(mission.Name))" href="PopUpMission" class="btn btn-primary">Details</a>*@
+                                <a @onclick="@(()=> ShowDetailsMission(mission.Id))" class="btn btn-primary">Details</a>
+                                <a class="btn btn-secondary" href="#">Agenda</a>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            }
         }
-    }
-</div>
+    </div>
+}
+
+
 
 @if (errorMessage != null)
 {
@@ -50,6 +61,7 @@
 
 
 @code {
+    private bool isAuthenticated = false;
     List<MissionDto>? missions;
     string errorMessage = "";
 
