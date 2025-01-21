@@ -7,23 +7,23 @@ namespace TechDispoB
         public AppShell()
         {
             InitializeComponent();
-           // CheckAuthentication();
+            //CheckAuthentication();
             // 📌 Enregistrer la route de MissionPage pour permettre la navigation
             //Routing.RegisterRoute("mission-page", typeof(MissionPage));
             //Routing.RegisterRoute("login-page", typeof(LoginPage));
             Routing.RegisterRoute("missions", typeof(MissionsListPage));
         }
 
-        //private async void CheckAuthentication()
-        //{
-        //    var token = await SecureStorage.GetAsync("token");
+        private async void CheckAuthentication()
+        {
+            var token = await SecureStorage.GetAsync("token");
 
-        //    if (string.IsNullOrEmpty(token))
-        //    {
-        //        Console.WriteLine("🔒 Aucun utilisateur connecté. Redirection vers Login.");
-        //        await Shell.Current.GoToAsync("//login");
-        //    }
-        //}
+            if (string.IsNullOrEmpty(token))
+            {
+                Console.WriteLine("🔒 Aucun utilisateur connecté. Redirection vers Login.");
+                await Shell.Current.GoToAsync("//login");
+            }
+        }
 
         //private async void OnLogoutClicked(object sender, EventArgs e)
         //{

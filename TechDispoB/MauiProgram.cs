@@ -24,7 +24,7 @@ namespace TechDispoB
             builder.Services.AddRefitClient<IAppService>()
                 .ConfigureHttpClient(client =>
                 {
-                    client.BaseAddress = new Uri("https://ton-api.ngrok-free.app"); // 🔹 Remplace par ton URL
+                    client.BaseAddress = new Uri("https://a4d3-2a01-e0a-1d4-b530-4885-aba6-e01a-927c.ngrok-free.app"); 
                 })
                 .AddHttpMessageHandler<AuthHeaderHandler>(); // 🔹 Ajout du Handler pour le token JWT
 
