@@ -5,7 +5,8 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:b="clr-namespace:Microsoft.AspNetCore.Components.WebView.Maui;assembly=Microsoft.AspNetCore.Components.WebView.Maui"
     xmlns:d="http://schemas.microsoft.com/dotnet/2021/maui/design"
-    xmlns:local="clr-namespace:TechDispoB"
+    xmlns:components="clr-namespace:TechDispoB.Components"
+    xmlns:local="clr-namespace:TechDispoB.Components.Pages"
     x:Class="TechDispoB.MissionsListPage"
     Title="MissionsListPage">
     <!--<ContentPage.Content>
@@ -13,7 +14,7 @@
 
             <b:BlazorWebView HostPage="wwwroot/index.html">
                 <b:BlazorWebView.RootComponents>
-                    <b:RootComponent Selector="#app" ComponentType="{x:Type local:Components.Routes}" />
+            <b:RootComponent Selector="#app" ComponentType="{x:Type local:MissionsListPage}" />
                 </b:BlazorWebView.RootComponents>
             </b:BlazorWebView>
 
