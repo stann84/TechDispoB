@@ -16,7 +16,7 @@
     </FlyoutItem>
 
     <FlyoutItem Title="Missions">
-        <ShellContent Title="Missions" ContentTemplate="{DataTemplate page:MissionsListPage}" Route="missions-liste-page" />
+        <ShellContent Title="Missions" ContentTemplate="{DataTemplate local:MissionsListPage}" Route="missions-list-page" />
     </FlyoutItem>
 
     <!--<FlyoutItem Title="Connexion" IsVisible="{Binding IsNotAuthenticated}">
