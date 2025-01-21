@@ -1,7 +1,8 @@
-﻿@page "/Login-page"
+﻿@page "/login-page"
 @using Microsoft.Maui.Storage
 @using TechDispoB.Models
 @using TechDispoB.Services
+@using TechDispoB.Services.Interfaces
 @inject IAppService AppService
 @inject NavigationManager NavManager
 
@@ -41,7 +42,7 @@
             // Récupère les informations de l'utilisateur à partir de la réponse
             var user = loginResponse.User;
             Console.WriteLine($"Utilisateur : {user.Username}, Ville : {user.City}");
-            NavManager.NavigateTo(AppRoutes.Missions);
+            await Shell.Current.GoToAsync("//mission");
         }
         else
         {

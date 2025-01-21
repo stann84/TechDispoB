@@ -1,6 +1,6 @@
-﻿@inject NavigationManager NavManager
-@using Microsoft.Maui.Storage 
-
+﻿@using Microsoft.Maui.Storage
+@* @inject NavigationManager NavManager
+ *@
 <div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
         <a class="navbar-brand" href="">TechDispoB</a>
@@ -11,22 +11,17 @@
 
 <div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
     <nav class="flex-column">
-        
+
         @if (isAuthenticated)
         {
             <div class="nav-item px-3">
-                <NavLink class="nav-link" href="@AppRoutes.Home" Match="NavLinkMatch.All">
+                <NavLink class="nav-link" href="//home">
                     <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
                 </NavLink>
             </div>
             <div class="nav-item px-3">
-                <NavLink class="nav-link" href="@AppRoutes.Missions">
+                <NavLink class="nav-link" href="//missions-list-page">
                     <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Mission
-                </NavLink>
-            </div>
-            <div class="nav-item px-3">
-                <NavLink class="nav-link" href="@AppRoutes.Login">
-                    <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Login
                 </NavLink>
             </div>
             <div class="nav-item px-3 mt-3">
@@ -38,14 +33,13 @@
         else
         {
             <div class="nav-item px-3">
-                <NavLink class="nav-link" href="@AppRoutes.Login">
+                <NavLink class="nav-link" href="//login">
                     <span class="bi bi-box-arrow-in-right" aria-hidden="true"></span> Connexion
                 </NavLink>
             </div>
         }
     </nav>
 </div>
-
 
 @code {
     private bool isAuthenticated = false;
@@ -61,6 +55,9 @@
         await SecureStorage.SetAsync("token", ""); // Supprime le token
         isAuthenticated = false;
         Console.WriteLine("🔓 Déconnexion réussie.");
-        NavManager.NavigateTo(AppRoutes.Login, forceLoad: true);
+        await Shell.Current.GoToAsync("//login");
     }
 }
+
+
+

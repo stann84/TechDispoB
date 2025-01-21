@@ -1,6 +1,7 @@
 ﻿@page "/mission-page/{missionId:int}"
 @using TechDispoB.Models
 @using TechDispoB.Services
+@using TechDispoB.Services.Interfaces
 @inject IAppService AppService
 
 <h3>Détails de la Mission</h3>
@@ -20,7 +21,7 @@ else
 }
 
 @code {
-    //[Parameter]
+    [Parameter]
     public int MissionId { get; set; }
 
     private MissionDto? mission;

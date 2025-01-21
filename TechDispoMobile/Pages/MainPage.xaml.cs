@@ -1,4 +1,4 @@
-﻿namespace TechDispoB
+﻿namespace TechDispoMobile
 {
     public partial class MainPage : ContentPage
     {

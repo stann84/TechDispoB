@@ -1,13 +1,21 @@
-﻿using TechDispoB.Models;
+﻿using Refit;
+using TechDispoB.Models;
 
-namespace TechDispoB.Services
+namespace TechDispoB.Services.Interfaces
 {
     public interface IAppService 
     {
-        public Task<LoginResponse?> Login(LoginModel loginModel);
-        public Task<List<MissionDto>> GetMissions();
-        public Task<MissionDto> GetMissionById(int missionId);
-        public Task<bool> CanConnectToDatabase();
+        [Post("/auth/login")]
+        Task<LoginResponse?> Login([Body] LoginModel loginModel);
+
+        [Get("/api/missions")]
+        Task<List<MissionDto>> GetMissions();
+
+        [Get("/api/mission/{missionId}")]
+        Task<MissionDto> GetMissionById(int missionId);
+
+        [Get("/api/connectdatabase")]
+        Task<bool> CanConnectToDatabase();
 
     }
 }

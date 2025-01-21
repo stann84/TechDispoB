@@ -1,6 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
+using Refit;
 using TechDispoB.Services;
 using TechDispoB.Services.Implementations;
+using TechDispoB.Services.Interfaces;
 
 namespace TechDispoB
 {
@@ -8,6 +10,8 @@ namespace TechDispoB
     {
         public static MauiApp CreateMauiApp()
         {
+            Console.WriteLine("🚀 MAUI App Initialization Started");
+
             var builder = MauiApp.CreateBuilder();
             builder
                 .UseMauiApp<App>()
@@ -16,16 +20,33 @@ namespace TechDispoB
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                 });
 
-           // builder.Services.AddMauiBlazorWebView();
+            // 🔹 Configurer Refit avec HttpClient et le handler qui ajoute le token
+            builder.Services.AddRefitClient<IAppService>()
+                .ConfigureHttpClient(client =>
+                {
+                    client.BaseAddress = new Uri("https://ton-api.ngrok-free.app"); // 🔹 Remplace par ton URL
+                })
+                .AddHttpMessageHandler<AuthHeaderHandler>(); // 🔹 Ajout du Handler pour le token JWT
 
-            // Enregistrer AppService en tant que Singleton
+            // 🔹 Ajouter Blazor WebView pour l'UI
+            builder.Services.AddMauiBlazorWebView();
+
+            // 🔹 Enregistrer `AuthHeaderHandler` pour ajouter automatiquement le token
+            builder.Services.AddTransient<AuthHeaderHandler>();
+
+            // 🔹 Enregistrer AppService qui utilisera HttpClient
             builder.Services.AddSingleton<IAppService, AppService>();
+
+            // 🔹 Enregistrer AuthState et AppShell
             builder.Services.AddSingleton<AuthState>();
             builder.Services.AddSingleton<AppShell>();
+
 #if DEBUG
-            //builder.Services.AddBlazorWebViewDeveloperTools();
+            builder.Services.AddBlazorWebViewDeveloperTools();
             builder.Logging.AddDebug();
 #endif
+
+            Console.WriteLine("✅ MAUI App Initialization Complete");
 
             return builder.Build();
         }

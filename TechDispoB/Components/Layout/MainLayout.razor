@@ -1,9 +1,9 @@
 ﻿@inherits LayoutComponentBase
-@inject NavigationManager NavManager
+@* @inject NavigationManager NavManager *@
 
 <div class="page">
     <div class="sidebar">
-        <NavMenu />
+@*         <NavMenu /> *@
     </div>
 
     <main>
@@ -26,7 +26,7 @@
         if (string.IsNullOrEmpty(token))
         {
             Console.WriteLine("🔒 Aucun utilisateur connecté. Redirection vers Login.");
-            NavManager.NavigateTo(AppRoutes.Login);
+            await Shell.Current.GoToAsync("//login");
         }
         else
         {

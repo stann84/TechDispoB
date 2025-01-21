@@ -5,25 +5,27 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:d="http://schemas.microsoft.com/dotnet/2021/maui/design"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:local="clr-namespace:TechDispoB.Components.Pages"
+    xmlns:local="clr-namespace:TechDispoB"
+    xmlns:page="clr-namespace:TechDispoB.Components.Pages"
     mc:Ignorable="d">
 
-    <!-- Menu de navigation -->
-    <FlyoutItem Title="Accueil" FlyoutDisplayOptions="AsMultipleItems">
-        <ShellContent Title="Accueil" ContentTemplate="{DataTemplate local:HomePage}" Route="home" />
+     <!--Menu de navigation-->
+
+    <FlyoutItem Title="Accueil">
+        <ShellContent Title="Accueil" ContentTemplate="{DataTemplate local:MainPage}" Route="main" />
     </FlyoutItem>
 
     <FlyoutItem Title="Missions">
-        <ShellContent Title="Missions" ContentTemplate="{DataTemplate local:MissionsListPage}" Route="mission" />
+        <ShellContent Title="Missions" ContentTemplate="{DataTemplate page:MissionsListPage}" Route="missionsliste" />
     </FlyoutItem>
 
-    <FlyoutItem Title="Connexion" IsVisible="{Binding IsNotAuthenticated}">
-        <ShellContent Title="Connexion" ContentTemplate="{DataTemplate local:LoginPage}" Route="login" />
-    </FlyoutItem>
+    <!--<FlyoutItem Title="Connexion" IsVisible="{Binding IsNotAuthenticated}">
+        <ShellContent Title="Connexion" ContentTemplate="{DataTemplate local:LoginPage}" Route="login-page" />
+    </FlyoutItem>-->
 
     <!-- Bouton Déconnexion (s'affiche si connecté) -->
-    <MenuItem x:Name="LogoutMenuItem" Text="Déconnexion" Clicked="OnLogoutClicked" IsEnabled="False"/>
-
+    <!--<MenuItem x:Name="LogoutMenuItem" Text="Déconnexion" Clicked="OnLogoutClicked" IsEnabled="False"/>-->
+    
 
 
     <!--
