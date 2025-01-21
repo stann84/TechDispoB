@@ -22,8 +22,8 @@
     {
         try
         {
-            var response = await AppService.CanConnectToDatabase(); // 🔥 Maintenant, on récupère un `DatabaseConnectionResponse`
-            connectionMessage = $"📡 {response.Message}"; // 🔥 Utilise le message retourné par l'API
+            var response = await AppService.CanConnectToDatabase();
+            connectionMessage = $"📡 {response.Message}";
         }
         catch (Exception ex)
         {

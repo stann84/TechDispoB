@@ -7,12 +7,6 @@ namespace TechDispoB.Services.Implementations
 {
     public class AppService 
     {
-        //private readonly HttpClient _httpClient;
-
-        //public AppService(HttpClient httpClient)
-        //{
-        //    _httpClient = httpClient;
-        //}
         private readonly IAppService _apiService;
 
         public AppService(IAppService apiService)
@@ -86,21 +80,22 @@ namespace TechDispoB.Services.Implementations
         //    }
         //}
 
-        public async Task<bool> CanConnectToDatabase()
+        public async Task<DatabaseConnectionResponse> CanConnectToDatabase()
         {
             try
             {
                 Console.WriteLine("📡 Vérification de la connexion à la base de données...");
+
                 var response = await _apiService.CanConnectToDatabase();
 
                 Console.WriteLine($"🔹 Réponse de l'API : {response?.Message}");
 
-                return response?.Message == "Connection successful";
+                return response ?? new DatabaseConnectionResponse { Message = "❌ Réponse API null" };
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"❌ Impossible de se connecter à la base de données : {ex.Message}");
-                return false;
+                return new DatabaseConnectionResponse { Message = $"⚠️ Erreur: {ex.Message}" };
             }
         }
     }

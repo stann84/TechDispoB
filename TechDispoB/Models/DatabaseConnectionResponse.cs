@@ -8,6 +8,6 @@ namespace TechDispoB.Models
 {
     public class DatabaseConnectionResponse
     {
-        public string Message { get; set; }
+        public string? Message { get; set; }
     }
 }
