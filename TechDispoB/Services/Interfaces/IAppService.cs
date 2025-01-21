@@ -15,7 +15,7 @@ namespace TechDispoB.Services.Interfaces
         Task<MissionDto> GetMissionById(int missionId);
 
         [Get("/api/connectdatabase")]
-        Task<bool> CanConnectToDatabase();
+        Task<DatabaseConnectionResponse> CanConnectToDatabase();
 
     }
 }

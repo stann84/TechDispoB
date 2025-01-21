@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Refit;
 using TechDispoB.Services;
-using TechDispoB.Services.Implementations;
 using TechDispoB.Services.Interfaces;
 
 namespace TechDispoB
@@ -12,6 +11,7 @@ namespace TechDispoB
         {
             Console.WriteLine("🚀 MAUI App Initialization Started");
 
+
             var builder = MauiApp.CreateBuilder();
             builder
                 .UseMauiApp<App>()
@@ -20,14 +20,13 @@ namespace TechDispoB
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                 });
 
-            // 🔹 Configurer Refit avec HttpClient et le handler qui ajoute le token
+            // 🔹 Configuration de Refit avec l'interface IAppService
             builder.Services.AddRefitClient<IAppService>()
                 .ConfigureHttpClient(client =>
                 {
-                    client.BaseAddress = new Uri("https://a4d3-2a01-e0a-1d4-b530-4885-aba6-e01a-927c.ngrok-free.app"); 
-                })
-                .AddHttpMessageHandler<AuthHeaderHandler>(); // 🔹 Ajout du Handler pour le token JWT
-
+                    client.BaseAddress = new Uri("https://53d4-2a01-e0a-1d4-b530-4885-aba6-e01a-927c.ngrok-free.app/");
+                });
+             
             // 🔹 Ajouter Blazor WebView pour l'UI
             builder.Services.AddMauiBlazorWebView();
 
@@ -35,7 +34,7 @@ namespace TechDispoB
             builder.Services.AddTransient<AuthHeaderHandler>();
 
             // 🔹 Enregistrer AppService qui utilisera HttpClient
-            builder.Services.AddSingleton<IAppService, AppService>();
+            //builder.Services.AddSingleton<IAppService, AppService>();
 
             // 🔹 Enregistrer AuthState et AppShell
             builder.Services.AddSingleton<AuthState>();

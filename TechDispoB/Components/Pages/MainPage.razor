@@ -15,12 +15,20 @@
     protected override async Task OnInitializedAsync()
     {
         await CheckDatabaseConnection();
+
     }
 
     private async Task CheckDatabaseConnection()
     {
-        bool canConnect = await AppService.CanConnectToDatabase();
-        connectionMessage = canConnect ? "Connecté à la base de données." : "Impossible de se connecter à la base de données.";
+        try
+        {
+            var response = await AppService.CanConnectToDatabase(); // 🔥 Maintenant, on récupère un `DatabaseConnectionResponse`
+            connectionMessage = $"📡 {response.Message}"; // 🔥 Utilise le message retourné par l'API
+        }
+        catch (Exception ex)
+        {
+            connectionMessage = $"⚠️ Erreur: {ex.Message}";
+        }
     }
     private async Task GoToMissions()
     {
