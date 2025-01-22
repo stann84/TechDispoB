@@ -4,9 +4,10 @@
 @using TechDispoB.Services
 @using TechDispoB.Services.Interfaces
 @inject IAppService AppService
-@inject NavigationManager NavManager
 
-<h3>Login</h3>
+<h1>Connexion</h1>
+
+<h3>Entrez vos identifiants</h3>
 
 <EditForm Model="@loginModel" OnValidSubmit="Submit">
     <div class="form-group">
@@ -33,23 +34,44 @@
 
     private async Task Submit()
     {
-        // Appelle le service pour effectuer la connexion
-        var loginResponse = await AppService.Login(loginModel);
+        try
+        {
+            Console.WriteLine($"Tentative de connexion avec Email: {loginModel.Email}");
 
-        if (loginResponse != null && !string.IsNullOrEmpty(loginResponse.Token))
-        {
-            await SecureStorage.SetAsync("token", loginResponse.Token);
-            // Récupère les informations de l'utilisateur à partir de la réponse
-            var user = loginResponse.User;
-            Console.WriteLine($"Utilisateur : {user.Username}, Ville : {user.City}");
-            await Shell.Current.GoToAsync("//mission");
+            var loginResponse = await AppService.Login(loginModel);
+
+            if (loginResponse != null && !string.IsNullOrEmpty(loginResponse.Token))
+            {
+                await SecureStorage.SetAsync("token", loginResponse.Token);
+                Console.WriteLine($"Connexion réussie. Token reçu : {loginResponse.Token}");
+                await Shell.Current.GoToAsync("//missions-list-page");
+            }
+            else
+            {
+                Console.WriteLine("Échec de la connexion : Identifiant ou mot de passe incorrect.");
+                await ShowAlert("Erreur", "Identifiant ou mot de passe incorrect.");
+            }
         }
-        else
+        catch (Refit.ApiException apiEx) // Capture l'erreur HTTP
         {
-            await ShowAlert("Erreur", "Identifiant ou mot de passe incorrect");
-            Console.WriteLine("Échec de la connexion.");
+            if (apiEx.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+            {
+                var errorContent = await apiEx.GetContentAsAsync<Dictionary<string, string>>();
+                string errorMessage = errorContent.ContainsKey("message") ? errorContent["message"] : "Identifiant ou mot de passe incorrect.";
+                await ShowAlert("Erreur", errorMessage);
+            }
+            else
+            {
+                await ShowAlert("Erreur", "Un problème est survenu. Vérifiez votre connexion.");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Erreur lors de la connexion : {ex.Message}");
+            await ShowAlert("Erreur", "Un problème est survenu. Vérifiez votre connexion.");
         }
     }
+
 
 
     private async Task ShowAlert(string title, string message)

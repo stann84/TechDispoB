@@ -18,9 +18,9 @@
         <ShellContent Title="Missions" ContentTemplate="{DataTemplate local:MissionsListPage}" Route="missions-list-page" />
     </FlyoutItem>
 
-    <!--<FlyoutItem Title="Connexion" IsVisible="{Binding IsNotAuthenticated}">
+    <FlyoutItem Title="Connexion" IsVisible="{Binding IsNotAuthenticated}">
         <ShellContent Title="Connexion" ContentTemplate="{DataTemplate local:LoginPage}" Route="login-page" />
-    </FlyoutItem>-->
+    </FlyoutItem>
 
     <!-- Bouton Déconnexion (s'affiche si connecté) -->
     <!--<MenuItem x:Name="LogoutMenuItem" Text="Déconnexion" Clicked="OnLogoutClicked" IsEnabled="False"/>-->

@@ -6,7 +6,7 @@ namespace TechDispoB.Services.Interfaces
     public interface IAppService 
     {
         [Post("/auth/login")]
-        Task<LoginResponse?> Login([Body] LoginModel loginModel);
+        Task<LoginResponseDto?> Login([Body] LoginModel loginModel);
 
         [Get("/api/missions")]
         Task<List<MissionDto>> GetMissions();

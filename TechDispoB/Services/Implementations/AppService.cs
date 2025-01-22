@@ -13,44 +13,46 @@ namespace TechDispoB.Services.Implementations
         {
             _apiService = apiService;
         }
-        //public async Task<LoginResponse?> Login(LoginModel loginModel)
-        //{
-        //    try
-        //    {
-        //        Console.WriteLine($"Tentative de connexion : {loginModel.Email}");
+        public async Task<LoginResponseDto?> Login(LoginModel loginModel)
+        {
+            try
+            {
+                Console.WriteLine($"🔑 Tentative de connexion pour : {loginModel.Email}");
 
-        //        // 🔹 Envoyer la requête POST avec un JSON
-        //        var response = await _apiService.PostAsJsonAsync("auth/login", loginModel);
+                var response = await _apiService.Login(loginModel);
 
-        //        // 🔹 Vérification de la réponse HTTP
-        //        if (!response.IsSuccessStatusCode)
-        //        {
-        //            var errorContent = await response.Content.ReadAsStringAsync();
-        //            Console.WriteLine($"❌ Connexion échouée : {response.StatusCode}, Erreur : {errorContent}");
-        //            return null;
-        //        }
+                if (response != null && !string.IsNullOrEmpty(response.Token))
+                {
+                    Console.WriteLine("✅ Jeton JWT reçu !");
+                    await SecureStorage.SetAsync("auth_token", response.Token);
+                    return response;
+                }
+                else
+                {
+                    Console.WriteLine("❌ Identifiants incorrects.");
+                    return null;
+                }
+            }
+            catch (Refit.ApiException apiEx)
+            {
+                Console.WriteLine($"❌ Erreur API : {apiEx.StatusCode}");
 
-        //        // 🔹 Désérialisation de la réponse JSON
-        //        var loginResponse = await response.Content.ReadFromJsonAsync<LoginResponse>(new JsonSerializerOptions
-        //        {
-        //            PropertyNameCaseInsensitive = true
-        //        });
+                if (apiEx.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                {
+                    Console.WriteLine($"⚠️ 401 Unauthorized - Vérifie ton email/mot de passe.");
+                }
 
-        //        if (loginResponse != null && !string.IsNullOrEmpty(loginResponse.Token))
-        //        {
-        //            // 🔹 Stocker le token en SecureStorage
-        //            await SecureStorage.SetAsync("auth_token", loginResponse.Token);
-        //            Console.WriteLine("✅ Jeton JWT stocké avec succès !");
-        //        }
+                Console.WriteLine($"📜 Contenu de la réponse : {await apiEx.GetContentAsAsync<string>()}");
+                return null;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"⚠️ Erreur générale : {ex.Message}");
+                return null;
+            }
+        }
 
-        //        return loginResponse;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Console.WriteLine($"⚠️ Erreur lors de la connexion : {ex.Message}");
-        //        return null;
-        //    }
-        //}
+
 
         //public async Task<List<MissionDto>> GetMissions()
         //{

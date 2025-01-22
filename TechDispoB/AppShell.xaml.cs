@@ -7,10 +7,10 @@ namespace TechDispoB
         public AppShell()
         {
             InitializeComponent();
-            //CheckAuthentication();
+            CheckAuthentication();
             // 📌 Enregistrer la route de MissionPage pour permettre la navigation
             //Routing.RegisterRoute("mission-page", typeof(MissionPage));
-            //Routing.RegisterRoute("login-page", typeof(LoginPage));
+            Routing.RegisterRoute("login-page", typeof(LoginPage));
             Routing.RegisterRoute("missions", typeof(MissionsListPage));
         }
 
@@ -21,7 +21,7 @@ namespace TechDispoB
             if (string.IsNullOrEmpty(token))
             {
                 Console.WriteLine("🔒 Aucun utilisateur connecté. Redirection vers Login.");
-                await Shell.Current.GoToAsync("//login");
+                await Shell.Current.GoToAsync("//login-page");
             }
         }
 
