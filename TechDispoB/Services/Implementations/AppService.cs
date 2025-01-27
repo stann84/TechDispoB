@@ -14,8 +14,6 @@ namespace TechDispoB.Services.Implementations
             _httpClient = HttpClientService.CreateHttpClient();
         }
 
-
-
         public async Task<LoginResponse?> Login(LoginModel loginModel)
         {
             try
