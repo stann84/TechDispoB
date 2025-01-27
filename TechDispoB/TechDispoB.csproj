@@ -48,11 +48,4 @@
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.0" />
 
 	</ItemGroup>
-
-	<ItemGroup>
-		<Reference Include="Biblioteque">
-			<HintPath>D:\ProjetNetCore\Projet\TechDispo\Biblioteque\bin\Debug\net6.0\Biblioteque.dll</HintPath>
-		</Reference>
-	</ItemGroup>
-
 </Project>

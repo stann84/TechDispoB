@@ -2,7 +2,6 @@
 using System.Text.Json;
 using TechDispoB.Models;  
 
-
 namespace TechDispoB.Services.Implementations
 {
     public class AppService : IAppService
@@ -13,7 +12,23 @@ namespace TechDispoB.Services.Implementations
         {
             _httpClient = HttpClientService.CreateHttpClient();
         }
-
+        public async Task<bool> CanConnectToDatabase()
+        {
+            try
+            {
+                var response = await _httpClient.GetAsync("/api/connectdatabase");
+                return response.IsSuccessStatusCode;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+        public async Task<bool> IsAuthenticated()
+        {
+            var token = await SecureStorage.GetAsync("auth_token");
+            return !string.IsNullOrEmpty(token); // Retourne true si un token est stocké
+        }
         public async Task<LoginResponse?> Login(LoginModel loginModel)
         {
             try
@@ -55,7 +70,6 @@ namespace TechDispoB.Services.Implementations
                 return null;
             }
         }
-
         public async Task<List<MissionDto>> GetMissions()
         {
             return await _httpClient.GetFromJsonAsync<List<MissionDto>>(Apis.ListMissions) ?? new List<MissionDto>();
@@ -65,17 +79,5 @@ namespace TechDispoB.Services.Implementations
             return await _httpClient.GetFromJsonAsync<MissionDto>($"/api/mission/{missionId}") ?? new MissionDto();
         }
 
-        public async Task<bool> CanConnectToDatabase()
-        {
-            try
-            {
-                var response = await _httpClient.GetAsync("/api/connectdatabase");
-                return response.IsSuccessStatusCode;
-            }
-            catch
-            {
-                return false;
-            }
-        }
     }
 }

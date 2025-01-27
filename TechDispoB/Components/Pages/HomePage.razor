@@ -4,14 +4,28 @@
 
 <h1>Accueil</h1>
 
-<h3>Base de donnée: @connectionMessage</h3>
+<h3>Statut Base de donnée: @connectionMessage</h3>
+<h4>Statut user : @statutUser</h4>
+
+@if (isUserConnected)
+{
+    <button @onclick="Logout" class="btn btn-danger">Déconnexion</button>
+}
+else
+{
+    <NavLink class="btn btn-primary" href="@AppRoutes.Login">Se connecter</NavLink>
+}
 
 @code {
     private string connectionMessage = "En attente de la vérification...";
+    private string statutUser = "Déconnecté";
+    private bool isUserConnected = false;
 
     protected override async Task OnInitializedAsync()
     {
         await CheckDatabaseConnection();
+        isUserConnected = await AppService.IsAuthenticated();
+        statutUser = isUserConnected ? "Connecté" : "Déconnecté";
     }
 
     private async Task CheckDatabaseConnection()
@@ -20,5 +34,10 @@
         connectionMessage = canConnect ? "Connecté à la base de données." : "Impossible de se connecter à la base de données.";
     }
 
-
+    private async Task Logout()
+    {
+        await SecureStorage.SetAsync("auth_token", ""); // Efface le token
+        isUserConnected = false;
+        statutUser = "Déconnecté";
+    }
 }
