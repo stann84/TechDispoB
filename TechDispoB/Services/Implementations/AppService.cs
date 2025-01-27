@@ -64,7 +64,7 @@ namespace TechDispoB.Services.Implementations
         }
         public async Task<MissionDto> GetMissionById(int missionId)
         {
-            return await _httpClient.GetFromJsonAsync<MissionDto>($"/api/mission/mission/{missionId}") ?? new MissionDto();
+            return await _httpClient.GetFromJsonAsync<MissionDto>($"/api/mission/{missionId}") ?? new MissionDto();
         }
 
         public async Task<bool> CanConnectToDatabase()
