@@ -1,8 +1,12 @@
-﻿namespace TechDispoB.Models
+﻿using System.Text.Json.Serialization;
+
+namespace TechDispoB.Models
 {
     public class LoginResponseDto
     {
-        public string Token { get; set; } = string.Empty;
-        public UserDto User { get; set; } = new UserDto();
+        [JsonPropertyName("token")]
+        public string? Token { get; set; }
+        [JsonPropertyName("user")]
+        public UserDto? User { get; set; }
     }
 }
