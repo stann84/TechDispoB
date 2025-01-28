@@ -6,19 +6,19 @@
 
 <h3>Login</h3>
 
-<EditForm Model="@loginModel" OnValidSubmit="Submit">
+<EditForm Model="@loginDto" OnValidSubmit="Submit">
     <div class="form-group">
         <label for="email">Email</label>
-        <input id="email" type="email" @bind-value="loginModel.Email" class="form-control" placeholder="Entrez votre email" required>
-        <ValidationMessage For="@(() => loginModel.Email)" />
+        <input id="email" type="email" @bind-value="loginDto.Email" class="form-control" placeholder="Entrez votre email" required>
+        <ValidationMessage For="@(() => loginDto.Email)" />
     </div>
     <div class="mt-2 form-group">
         <label for="password">Mot de passe</label>
-        <input id="password" type="password" @bind-value="loginModel.Password" class="form-control" placeholder="Mot de passe" required>
-        <ValidationMessage For="@(() => loginModel.Password)" />
+        <input id="password" type="password" @bind-value="loginDto.Password" class="form-control" placeholder="Mot de passe" required>
+        <ValidationMessage For="@(() => loginDto.Password)" />
     </div>
 @*     <div class="mt-2 form-group form-check">
-        <input id="rememberMe" type="checkbox" @bind-value="loginModel.RememberMe" class="form-check-input">
+        <input id="rememberMe" type="checkbox" @bind-value="loginDto.RememberMe" class="form-check-input">
         <label for="rememberMe" class="form-check-label">Se souvenir de moi</label>
     </div> *@
     <div class="text-center mt-2">
@@ -27,17 +27,17 @@
 </EditForm>
 
 @code {
-    private LoginModel loginModel = new();
+ LoginDto loginDto = new();
     protected override void OnInitialized()
     {
-        loginModel.Email = "stann84@hotmail.co";
-        loginModel.Password = "Zalaman1.";
+        loginDto.Email = "stann84@hotmail.co";
+        loginDto.Password = "Zalaman1.";
     }
 
     private async Task Submit()
     {
         // Appelle le service pour effectuer la connexion
-        var loginResponse = await AppService.Login(loginModel);
+        var loginResponse = await AppService.Login(loginDto);
 
         if (loginResponse != null)
         {

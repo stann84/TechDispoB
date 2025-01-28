@@ -30,7 +30,7 @@ namespace TechDispoB.Services.Implementations
             var token = await SecureStorage.GetAsync("auth_token");
             return !string.IsNullOrEmpty(token); // Retourne true si un token est stocké
         }
-        public async Task<LoginResponse?> Login(LoginModel loginModel)
+        public async Task<LoginResponseDto?> Login(LoginDto loginModel)
         {
             try
             {
@@ -49,8 +49,8 @@ namespace TechDispoB.Services.Implementations
                     return null;
                 }
 
-                // Désérialisation de la réponse JSON en LoginResponse
-                var loginResponse = await response.Content.ReadFromJsonAsync<LoginResponse>(new JsonSerializerOptions
+                // Désérialisation de la réponse JSON en LoginResponseDto
+                var loginResponse = await response.Content.ReadFromJsonAsync<LoginResponseDto>(new JsonSerializerOptions
                 {
                     PropertyNameCaseInsensitive = true // Pour gérer les différences de casse dans les noms de propriétés
                 });

@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace TechDispoB.Models
 {
-    public class LoginModel
+    public class LoginDto
     {
         [Required]
         [EmailAddress]

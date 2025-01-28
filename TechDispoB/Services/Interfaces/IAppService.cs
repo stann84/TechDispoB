@@ -4,7 +4,7 @@ namespace TechDispoB.Services
 {
     public interface IAppService 
     {
-        public Task<LoginResponse?> Login(LoginModel loginModel);
+        public Task<LoginResponseDto?> Login(LoginDto loginModel);
         public Task<List<MissionDto>> GetMissions();
         public Task<MissionDto> GetMissionById(int missionId);
         public Task<bool> CanConnectToDatabase();
