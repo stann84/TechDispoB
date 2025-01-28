@@ -14,6 +14,7 @@
 		<ApplicationId>com.companyname.techdispob</ApplicationId>
 		<ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
 		<ApplicationVersion>1</ApplicationVersion>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<!--<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">14.2</SupportedOSPlatformVersion>
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">14.0</SupportedOSPlatformVersion>-->
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">24.0</SupportedOSPlatformVersion>
@@ -48,11 +49,4 @@
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.0" />
 
 	</ItemGroup>
-
-	<ItemGroup>
-		<Reference Include="Biblioteque">
-			<HintPath>D:\ProjetNetCore\Projet\TechDispo\Biblioteque\bin\Debug\net6.0\Biblioteque.dll</HintPath>
-		</Reference>
-	</ItemGroup>
-
 </Project>

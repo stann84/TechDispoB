@@ -1,4 +1,10 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
+﻿@using Microsoft.EntityFrameworkCore.Metadata.Internal
+@using TechDispoB.Services
+@inject IAppService AppService
+@inject NavigationManager Navigation
+
+
+<div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
         <a class="navbar-brand" href="">TechDispoB</a>
     </div>
@@ -8,20 +14,53 @@
 
 <div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
     <nav class="flex-column">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="@AppRoutes.Missions">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Mission
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="@AppRoutes.Login">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Login
-            </NavLink>
-        </div>
+        @if (isAuthenticated)
+        {
+             <div class="nav-item px-3">
+                <NavLink class="nav-link" href="@AppRoutes.Home" Match="NavLinkMatch.All">                 
+                    <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Accueil
+                </NavLink>
+            </div>
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="@AppRoutes.Missions">
+                    <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Mission
+                </NavLink>
+            </div>
+        }
+        else
+        {
+            <div class="nav-item px-3">
+                <NavLink class="btn btn-primary" href="@AppRoutes.Login">Se connecter</NavLink>
+            </div>
+        }
+
     </nav>
 </div>
+@code{
+    bool isAuthenticated = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        isAuthenticated = await AppService.IsAuthenticated();
+        AppService.OnAuthStateChanged += HandleAuthStateChanged;
+    }
+    private async void HandleAuthStateChanged()
+    {
+        isAuthenticated = await AppService.IsAuthenticated();
+        StateHasChanged(); // 🔥 Force la mise à jour de l'interface utilisateur
+    }
+    private async Task Logout()
+    {
+        await AppService.Logout();
+        isAuthenticated = false;
+        StateHasChanged();
+    }
+    public void Dispose()
+    {
+        AppService.OnAuthStateChanged -= HandleAuthStateChanged;
+    }
+    protected override async Task OnParametersSetAsync()
+    {
+        isAuthenticated = await AppService.IsAuthenticated();
+    }
+}

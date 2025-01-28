@@ -1,24 +1,47 @@
 ﻿@page "/"
 @using TechDispoB.Services
 @inject IAppService AppService
+@inject NavigationManager Navigation
 
-<h1>Accueil</h1>
+<h1>Accueil</h1> 
 
-<h3>Base de donnée: @connectionMessage</h3>
+<p>Connexion a la base de donnée : @connectionMessage</p>
+<p>Vous êtes : @statutUser</p>
+
+@if (isUserConnected)
+{
+    <button @onclick="Logout" class="btn btn-danger">Déconnexion</button>
+}
+else
+{
+    <NavLink class="btn btn-primary" href="@AppRoutes.Login">Se connecter</NavLink>
+}
 
 @code {
     private string connectionMessage = "En attente de la vérification...";
+    private string statutUser = "Déconnecté";
+    private bool isUserConnected = false;
 
     protected override async Task OnInitializedAsync()
     {
         await CheckDatabaseConnection();
+        isUserConnected = await AppService.IsAuthenticated();
+        statutUser = isUserConnected ?  "Authentifié" : "Non Authentifié";
     }
 
     private async Task CheckDatabaseConnection()
     {
         bool canConnect = await AppService.CanConnectToDatabase();
-        connectionMessage = canConnect ? "Connecté à la base de données." : "Impossible de se connecter à la base de données.";
+        connectionMessage = canConnect ? "Connecté" : "Déconnecté";
     }
 
-
+    private async Task Logout()
+    {
+        await AppService.Logout();
+        isUserConnected = false;
+        statutUser = "Déconnecté";
+        StateHasChanged();
+        Navigation.NavigateTo(AppRoutes.Login, true);
+        
+    }
 }

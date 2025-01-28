@@ -1,7 +1,7 @@
-﻿using System.Net.Http.Json;
+﻿using Microsoft.AspNetCore.Components;
+using System.Net.Http.Json;
 using System.Text.Json;
-using TechDispoB.Models;  
-
+using TechDispoB.Models;
 
 namespace TechDispoB.Services.Implementations
 {
@@ -9,11 +9,28 @@ namespace TechDispoB.Services.Implementations
     {
         private readonly HttpClient _httpClient;
 
+        public event Action? OnAuthStateChanged; // ✅ Ajout de l'événement
         public AppService()
         {
             _httpClient = HttpClientService.CreateHttpClient();
         }
-
+        public async Task<bool> CanConnectToDatabase()
+        {
+            try
+            {
+                var response = await _httpClient.GetAsync("/api/connectdatabase");
+                return response.IsSuccessStatusCode;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+        public async Task<bool> IsAuthenticated()
+        {
+            var token = await SecureStorage.GetAsync("auth_token");
+            return !string.IsNullOrEmpty(token); // Retourne true si un token est stocké
+        }
         public async Task<LoginResponse?> Login(LoginModel loginModel)
         {
             try
@@ -44,6 +61,7 @@ namespace TechDispoB.Services.Implementations
                     // Stocker le jeton dans SecureStorage
                     await SecureStorage.SetAsync("auth_token", loginResponse.Token);
                     Console.WriteLine("Jeton JWT stocké avec succès !");
+                    OnAuthStateChanged?.Invoke(); // Notifie Blazor
                 }
 
                 return loginResponse;
@@ -55,27 +73,22 @@ namespace TechDispoB.Services.Implementations
                 return null;
             }
         }
-
         public async Task<List<MissionDto>> GetMissions()
         {
             return await _httpClient.GetFromJsonAsync<List<MissionDto>>(Apis.ListMissions) ?? new List<MissionDto>();
+
         }
         public async Task<MissionDto> GetMissionById(int missionId)
         {
             return await _httpClient.GetFromJsonAsync<MissionDto>($"/api/mission/{missionId}") ?? new MissionDto();
         }
-
-        public async Task<bool> CanConnectToDatabase()
+        public async Task Logout()
         {
-            try
-            {
-                var response = await _httpClient.GetAsync("/api/connectdatabase");
-                return response.IsSuccessStatusCode;
-            }
-            catch
-            {
-                return false;
-            }
+            await SecureStorage.SetAsync("auth_token", ""); // Efface le token
+            Console.WriteLine("Utilisateur déconnecté !");
+            OnAuthStateChanged?.Invoke(); // Notifie Blazor
+            
         }
+
     }
 }
