@@ -9,8 +9,6 @@ namespace TechDispoB.Services.Implementations
         private readonly HttpClient _httpClient;
 
         public event Action? OnAuthStateChanged; // ✅ Ajout de l'événement
-
-
         public AppService()
         {
             _httpClient = HttpClientService.CreateHttpClient();

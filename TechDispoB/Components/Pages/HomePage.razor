@@ -36,9 +36,10 @@ else
 
     private async Task Logout()
     {
-        await SecureStorage.SetAsync("auth_token", ""); // Efface le token
+        await AppService.Logout();
         isUserConnected = false;
         statutUser = "Déconnecté";
-        await AppService.Logout();
+        StateHasChanged();
+        
     }
 }

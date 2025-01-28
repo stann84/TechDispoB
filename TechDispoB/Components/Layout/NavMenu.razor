@@ -43,7 +43,6 @@
     {
         isAuthenticated = await AppService.IsAuthenticated();
         AppService.OnAuthStateChanged += HandleAuthStateChanged;
-        StateHasChanged(); // 🔥 Force une mise à jour immédiate après le chargement
     }
     private async void HandleAuthStateChanged()
     {
@@ -54,9 +53,7 @@
     {
         await AppService.Logout();
         isAuthenticated = false;
-        Console.WriteLine($"🚪 Déconnexion - isAuthenticated = {isAuthenticated}");
         StateHasChanged();
-        Navigation.NavigateTo("/", true);
     }
     public void Dispose()
     {
@@ -65,6 +62,5 @@
     protected override async Task OnParametersSetAsync()
     {
         isAuthenticated = await AppService.IsAuthenticated();
-        StateHasChanged();
     }
 }
