@@ -39,5 +39,6 @@ else
         await SecureStorage.SetAsync("auth_token", ""); // Efface le token
         isUserConnected = false;
         statutUser = "Déconnecté";
+        await AppService.Logout();
     }
 }

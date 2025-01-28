@@ -28,6 +28,11 @@
 
 @code {
     private LoginModel loginModel = new();
+    protected override void OnInitialized()
+    {
+        loginModel.Email = "stann84@hotmail.co";
+        loginModel.Password = "Zalaman1.";
+    }
 
     private async Task Submit()
     {

@@ -1,5 +1,7 @@
-﻿@using TechDispoB.Services
+﻿@using Microsoft.EntityFrameworkCore.Metadata.Internal
+@using TechDispoB.Services
 @inject IAppService AppService
+@inject NavigationManager Navigation
 
 
 <div class="top-row ps-3 navbar navbar-dark">
@@ -20,7 +22,7 @@
                 </NavLink>
             </div>
             <div class="nav-item px-3">
-                <NavLink class="nav-link" href="missions-list-page">
+                <NavLink class="nav-link" href="@AppRoutes.Missions">
                     <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Mission
                 </NavLink>
             </div>
@@ -40,10 +42,29 @@
     protected override async Task OnInitializedAsync()
     {
         isAuthenticated = await AppService.IsAuthenticated();
+        AppService.OnAuthStateChanged += HandleAuthStateChanged;
+        StateHasChanged(); // 🔥 Force une mise à jour immédiate après le chargement
+    }
+    private async void HandleAuthStateChanged()
+    {
+        isAuthenticated = await AppService.IsAuthenticated();
+        StateHasChanged(); // 🔥 Force la mise à jour de l'interface utilisateur
     }
     private async Task Logout()
     {
-        await SecureStorage.SetAsync("auth_token", "");
+        await AppService.Logout();
         isAuthenticated = false;
+        Console.WriteLine($"🚪 Déconnexion - isAuthenticated = {isAuthenticated}");
+        StateHasChanged();
+        Navigation.NavigateTo("/", true);
+    }
+    public void Dispose()
+    {
+        AppService.OnAuthStateChanged -= HandleAuthStateChanged;
+    }
+    protected override async Task OnParametersSetAsync()
+    {
+        isAuthenticated = await AppService.IsAuthenticated();
+        StateHasChanged();
     }
 }

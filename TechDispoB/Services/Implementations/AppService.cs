@@ -8,6 +8,9 @@ namespace TechDispoB.Services.Implementations
     {
         private readonly HttpClient _httpClient;
 
+        public event Action? OnAuthStateChanged; // ✅ Ajout de l'événement
+
+
         public AppService()
         {
             _httpClient = HttpClientService.CreateHttpClient();
@@ -59,6 +62,7 @@ namespace TechDispoB.Services.Implementations
                     // Stocker le jeton dans SecureStorage
                     await SecureStorage.SetAsync("auth_token", loginResponse.Token);
                     Console.WriteLine("Jeton JWT stocké avec succès !");
+                    OnAuthStateChanged?.Invoke(); // Notifie Blazor
                 }
 
                 return loginResponse;
@@ -73,10 +77,17 @@ namespace TechDispoB.Services.Implementations
         public async Task<List<MissionDto>> GetMissions()
         {
             return await _httpClient.GetFromJsonAsync<List<MissionDto>>(Apis.ListMissions) ?? new List<MissionDto>();
+
         }
         public async Task<MissionDto> GetMissionById(int missionId)
         {
             return await _httpClient.GetFromJsonAsync<MissionDto>($"/api/mission/{missionId}") ?? new MissionDto();
+        }
+        public async Task Logout()
+        {
+            await SecureStorage.SetAsync("auth_token", ""); // Efface le token
+            Console.WriteLine("Utilisateur déconnecté !");
+            OnAuthStateChanged?.Invoke(); // Notifie Blazor
         }
 
     }
