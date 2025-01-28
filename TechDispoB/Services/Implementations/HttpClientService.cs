@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace TechDispoB.Services.Implementations
+﻿namespace TechDispoB.Services.Implementations
 {
     public static class HttpClientService
     {

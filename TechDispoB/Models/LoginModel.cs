@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace TechDispoB.Models
 {
@@ -6,12 +7,15 @@ namespace TechDispoB.Models
     {
         [Required]
         [EmailAddress]
-        public string? Email { get; set; }
+        [JsonPropertyName("email")]
+        public string? Email { get; set; } = string.Empty;
         [Required]
         [DataType(DataType.Password)]
+        [JsonPropertyName("password")]
         public string? Password { get; set; }
 
         [Display(Name = "Se rappeler de moi ")]
+        [JsonPropertyName("rememberMe")]
         public bool RememberMe { get; set; } = true;
 
     }

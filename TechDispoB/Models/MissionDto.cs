@@ -1,18 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Text.Json.Serialization;
 
 namespace TechDispoB.Models
 {
     public class MissionDto
     {
+        [JsonPropertyName("id")]
         public int Id { get; set; }
-        public string Name { get; set; }
-        public string Ville { get; set; }
-        public string Description { get; set; }
-        public DateTime StartDate { get; set; }
-        public string ClientName { get; set; } // Données adaptées pour l'API
+
+        [JsonPropertyName("name")]
+        public string Name { get; set; } = "Nom";
+
+        [JsonPropertyName("ville")]
+        public string Ville { get; set; } = "Ville";
+
+        [JsonPropertyName("description")]
+        public string Description { get; set; } = "Description";
+
+        [JsonPropertyName("startDate")]
+        public DateTime StartDate { get; set; } = DateTime.Now;
+
+        [JsonPropertyName("clientName")]
+        public string ClientName { get; set; } = "Nom du client";
     }
 }

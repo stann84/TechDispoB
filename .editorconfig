@@ -1,0 +1,10 @@
+﻿[*.cs]
+
+# JN02: Add JsonIgnoreAttribute to property (Newtonsoft.Json)
+dotnet_diagnostic.JN02.severity = none
+
+# JN01: Add JsonPropertyAttribute to property (Newtonsoft.Json)
+dotnet_diagnostic.JN01.severity = none
+
+# Default severity for all analyzer diagnostics
+dotnet_analyzer_diagnostic.severity = none

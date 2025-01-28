@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Components;
-using System.Net.Http.Json;
+﻿using System.Net.Http.Json;
 using System.Text.Json;
 using TechDispoB.Models;
 
@@ -75,8 +74,7 @@ namespace TechDispoB.Services.Implementations
         }
         public async Task<List<MissionDto>> GetMissions()
         {
-            return await _httpClient.GetFromJsonAsync<List<MissionDto>>(Apis.ListMissions) ?? new List<MissionDto>();
-
+            return await _httpClient.GetFromJsonAsync<List<MissionDto>>(Apis.ListMissions) ?? [];
         }
         public async Task<MissionDto> GetMissionById(int missionId)
         {
