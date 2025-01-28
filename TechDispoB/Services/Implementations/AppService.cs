@@ -1,6 +1,7 @@
-﻿using System.Net.Http.Json;
+﻿using Microsoft.AspNetCore.Components;
+using System.Net.Http.Json;
 using System.Text.Json;
-using TechDispoB.Models;  
+using TechDispoB.Models;
 
 namespace TechDispoB.Services.Implementations
 {
@@ -86,6 +87,7 @@ namespace TechDispoB.Services.Implementations
             await SecureStorage.SetAsync("auth_token", ""); // Efface le token
             Console.WriteLine("Utilisateur déconnecté !");
             OnAuthStateChanged?.Invoke(); // Notifie Blazor
+            
         }
 
     }

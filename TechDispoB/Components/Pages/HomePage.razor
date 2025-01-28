@@ -1,11 +1,12 @@
 ﻿@page "/"
 @using TechDispoB.Services
 @inject IAppService AppService
+@inject NavigationManager Navigation
 
-<h1>Accueil</h1>
+<h1>Accueil</h1> 
 
-<h3>Statut Base de donnée: @connectionMessage</h3>
-<h4>Statut user : @statutUser</h4>
+<p>Connexion a la base de donnée : @connectionMessage</p>
+<p>Vous êtes : @statutUser</p>
 
 @if (isUserConnected)
 {
@@ -25,13 +26,13 @@ else
     {
         await CheckDatabaseConnection();
         isUserConnected = await AppService.IsAuthenticated();
-        statutUser = isUserConnected ? "Connecté" : "Déconnecté";
+        statutUser = isUserConnected ?  "Authentifié" : "Non Authentifié";
     }
 
     private async Task CheckDatabaseConnection()
     {
         bool canConnect = await AppService.CanConnectToDatabase();
-        connectionMessage = canConnect ? "Connecté à la base de données." : "Impossible de se connecter à la base de données.";
+        connectionMessage = canConnect ? "Connecté" : "Déconnecté";
     }
 
     private async Task Logout()
@@ -40,6 +41,7 @@ else
         isUserConnected = false;
         statutUser = "Déconnecté";
         StateHasChanged();
+        Navigation.NavigateTo(AppRoutes.Login, true);
         
     }
 }
