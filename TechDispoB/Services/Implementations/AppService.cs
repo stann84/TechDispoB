@@ -59,7 +59,9 @@ namespace TechDispoB.Services.Implementations
                 {
                     // Stocker le jeton dans SecureStorage
                     await SecureStorage.SetAsync("auth_token", loginResponse.Token);
+                    await SecureStorage.SetAsync("userId", loginResponse.User.Id);
                     Console.WriteLine("Jeton JWT stocké avec succès !");
+                    Console.WriteLine($"user Id = : {loginResponse.User.Id}");
                     OnAuthStateChanged?.Invoke(); // Notifie Blazor
                 }
 
@@ -79,6 +81,11 @@ namespace TechDispoB.Services.Implementations
         public async Task<MissionDto> GetMissionById(int missionId)
         {
             return await _httpClient.GetFromJsonAsync<MissionDto>($"/api/mission/{missionId}") ?? new MissionDto();
+        }
+
+        public async Task<List<MissionDto>> GetMissionsForUserAsync(string userId)
+        {
+            return await _httpClient.GetFromJsonAsync<List<MissionDto>>($"/api/mission/user/{userId}") ?? new List<MissionDto>();
         }
         public async Task Logout()
         {

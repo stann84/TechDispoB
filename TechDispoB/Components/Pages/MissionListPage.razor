@@ -2,7 +2,7 @@
 @using TechDispoB.Models
 @using TechDispoB.Services;
 @inject IAppService AppService;
-@inject NavigationManager NavigationManager
+@inject NavigationManager Navigation
 
 
 <h3>Missions</h3>
@@ -56,14 +56,24 @@
 
     protected override async Task OnInitializedAsync()
     {
-        try
+
+        var userId = await SecureStorage.GetAsync("userId");
+
+        if (string.IsNullOrEmpty(userId))
         {
-            missions = await AppService.GetMissions();
+            Navigation.NavigateTo(AppRoutes.Login , true);
+
         }
-        catch (Exception ex)
-        {
-            errorMessage = ex.Message;
-        }
+        missions = await AppService.GetMissionsForUserAsync(userId);
+
+        // Toutes les missions
+        // try
+        //     missions = await AppService.GetMissions(); 
+        // }
+        // catch (Exception ex)
+        // {
+        //     errorMessage = ex.Message;
+        // }
 
     }
     void ShowDetailsMission(int missionId)
@@ -71,7 +81,7 @@
         try
         {
             Console.WriteLine("mission id trouvé " + missionId);
-            NavigationManager.NavigateTo($"mission-page/{missionId}");
+            Navigation.NavigateTo($"mission-page/{missionId}");
            
         }
         catch(Exception ex)
