@@ -13,6 +13,5 @@ namespace TechDispoB.Services
         public Task Logout();
         event Action? OnAuthStateChanged; // ✅ Événement pour notifier Blazor du changement d'état
 
-
     }
 }

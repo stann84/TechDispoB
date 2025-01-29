@@ -6,9 +6,9 @@ namespace TechDispoB.Services.Implementations
 {
     public class AppService : IAppService
     {
-        private readonly HttpClient _httpClient;
+        public event Action? OnAuthStateChanged;
 
-        public event Action? OnAuthStateChanged; // ✅ Ajout de l'événement
+        private readonly HttpClient _httpClient;
         public AppService()
         {
             _httpClient = HttpClientService.CreateHttpClient();
@@ -17,7 +17,9 @@ namespace TechDispoB.Services.Implementations
         {
             try
             {
-                var response = await _httpClient.GetAsync("/api/connectdatabase");
+                //var response = await _httpClient.GetAsync("/api/connectdatabase");
+                var response = await _httpClient.GetAsync(Apis.CheckDatabaseConnection);
+
                 return response.IsSuccessStatusCode;
             }
             catch
@@ -74,6 +76,13 @@ namespace TechDispoB.Services.Implementations
                 return null;
             }
         }
+        public async Task Logout()
+        {
+            await SecureStorage.SetAsync("auth_token", ""); // Efface le token
+            Console.WriteLine("Utilisateur déconnecté !");
+            OnAuthStateChanged?.Invoke(); // Notifie Blazor
+
+        }
         public async Task<List<MissionDto>> GetMissions()
         {
             return await _httpClient.GetFromJsonAsync<List<MissionDto>>(Apis.ListMissions) ?? [];
@@ -82,18 +91,11 @@ namespace TechDispoB.Services.Implementations
         {
             return await _httpClient.GetFromJsonAsync<MissionDto>($"/api/mission/{missionId}") ?? new MissionDto();
         }
-
         public async Task<List<MissionDto>> GetMissionsForUserAsync(string userId)
         {
             return await _httpClient.GetFromJsonAsync<List<MissionDto>>($"/api/mission/user/{userId}") ?? new List<MissionDto>();
         }
-        public async Task Logout()
-        {
-            await SecureStorage.SetAsync("auth_token", ""); // Efface le token
-            Console.WriteLine("Utilisateur déconnecté !");
-            OnAuthStateChanged?.Invoke(); // Notifie Blazor
-            
-        }
+
 
     }
 }
