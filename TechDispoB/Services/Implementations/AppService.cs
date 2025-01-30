@@ -6,13 +6,13 @@ namespace TechDispoB.Services.Implementations
 {
     public class AppService : IAppService
     {
-        public event Action? OnAuthStateChanged;
-
         private readonly HttpClient _httpClient;
         public AppService()
         {
             _httpClient = HttpClientService.CreateHttpClient();
         }
+        // User 
+        public event Action? OnAuthStateChanged;
         public async Task<bool> CanConnectToDatabase()
         {
             try
@@ -37,7 +37,7 @@ namespace TechDispoB.Services.Implementations
             try
             {
                 // Envoyer la requête POST avec un corps JSON
-                var response = await _httpClient.PostAsJsonAsync("/auth/login", loginModel);
+                var response = await _httpClient.PostAsJsonAsync(Apis.Login, loginModel);
                 Console.WriteLine(response);
                 Console.WriteLine($"Email: {loginModel.Email}, Password: {loginModel.Password}, RememberMe: {loginModel.RememberMe}");
                 var json = JsonSerializer.Serialize(loginModel);
@@ -83,6 +83,8 @@ namespace TechDispoB.Services.Implementations
             OnAuthStateChanged?.Invoke(); // Notifie Blazor
 
         }
+        // Missions
+
         public async Task<List<MissionDto>> GetMissions()
         {
             return await _httpClient.GetFromJsonAsync<List<MissionDto>>(Apis.ListMissions) ?? [];
