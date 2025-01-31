@@ -9,12 +9,16 @@ namespace TechDispoB.Services
         public Task<bool> CanConnectToDatabase();
         public Task<bool> IsAuthenticated();
         public Task Logout();
+        public Task<bool> UpdateUserLocationAsync(string userId, double latitude, double longitude);
+
         event Action? OnAuthStateChanged; // ✅ Événement pour notifier Blazor du changement d'état
 
         // Missions 
         public Task<List<MissionDto>> GetMissions();
         public Task<MissionDto> GetMissionById(int missionId);
         public Task<List<MissionDto>> GetMissionsForUserAsync(string userId);
+
+        public Task<UserDto> GetUserById(string userId);
 
     }
 }

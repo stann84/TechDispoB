@@ -1,0 +1,164 @@
+﻿@page "/settings"
+@using TechDispoB.Services
+@inject IAppService AppService
+@inject NavigationManager Navigation
+
+<h1 class="text-2xl font-bold mb-4">Paramètres</h1>
+
+<div class="mb-6">
+    <p> <span class="@(connectionMessage == "Connecté" ? "text-green-600" : "text-red-600")">@connectionMessage</span></p>
+    <p><span class="font-semibold">Statut :</span> <span class="@(isUserConnected ? "text-green-600" : "text-red-600")">@statutUser</span></p>
+</div>
+
+@if (user != null)
+{
+    <div class="bg-white shadow-md rounded-lg p-6 mb-4">
+        <h2 class="text-xl font-semibold mb-4">Informations Utilisateur</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+                <span class="font-semibold">📇 ID :</span> @user.Id
+            </div>
+            <div>
+                <span class="font-semibold">📧 Email :</span> @user.Email
+            </div>
+            <div>
+                <span class="font-semibold">👤 Nom d'utilisateur :</span> @user.UserName
+            </div>
+            <div>
+                <span class="font-semibold">📍 Latitude :</span> @(user.Latitude != 0 ? user.Latitude : "Non disponible")
+            </div>
+            <div>
+                <span class="font-semibold">📍 Longitude :</span> @(user.Longitude != 0 ? user.Longitude : "Non disponible")
+            </div>
+            <div>
+                <span class="font-semibold">🏙️ Ville :</span> @(string.IsNullOrEmpty(user.City) ? "Non disponible" : user.City)
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="bg-red-100 text-red-800 p-4 rounded-md mb-4">
+        <p>Aucune information utilisateur trouvée.</p>
+    </div>
+}
+
+@if (isUserConnected)
+{
+    <button @onclick="Logout" class="btn btn-danger mt-4 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition duration-200">
+        Déconnexion
+    </button>
+}
+else
+{
+    <NavLink class="btn btn-primary mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition duration-200" href="@AppRoutes.Login">
+        Se connecter
+    </NavLink>
+}
+
+@code
+{
+    private UserDto user = new();
+    private string connectionMessage = "Récuperation des données...";
+    private string statutUser = "Déconnecté";
+    private bool isUserConnected = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CheckDatabaseConnection();
+        isUserConnected = await AppService.IsAuthenticated();
+        statutUser = isUserConnected ? "Authentifié" : "Non Authentifié";
+
+        var userId = await SecureStorage.GetAsync("userId");
+
+        if (!string.IsNullOrEmpty(userId))
+        {
+            // 📌 🔥 Récupération des informations de l'utilisateur avec un GUID (string)
+            user = await AppService.GetUserById(userId);
+
+            if (user != null)
+            {
+                Console.WriteLine($"Utilisateur récupéré : {user.Email}");
+
+                // 📌 🔥 Récupération de la localisation et mise à jour API
+                var location = await GetUserLocationAsync();
+                if (location != null)
+                {
+                    bool success = await AppService.UpdateUserLocationAsync(userId, location.Latitude, location.Longitude);
+                    if (success)
+                    {
+                        Console.WriteLine("Position mise à jour sur l'API !");
+                        user.Latitude = location.Latitude;
+                        user.Longitude = location.Longitude;
+                    }
+                    else
+                    {
+                        Console.WriteLine("Erreur lors de la mise à jour de la localisation.");
+                    }
+                }
+            }
+            else
+            {
+                Console.WriteLine("L'utilisateur n'a pas été trouvé.");
+            }
+        }
+        else
+        {
+            Console.WriteLine("Impossible de récupérer l'ID utilisateur depuis SecureStorage.");
+        }
+
+        // 📌 🔥 Met à jour l'UI après chargement
+        StateHasChanged();
+    }
+
+    public async Task<Location?> GetUserLocationAsync()
+    {
+        try
+        {
+            var permissionStatus = await Permissions.CheckStatusAsync<Permissions.LocationWhenInUse>();
+
+            if (permissionStatus != PermissionStatus.Granted)
+            {
+                permissionStatus = await Permissions.RequestAsync<Permissions.LocationWhenInUse>();
+                if (permissionStatus != PermissionStatus.Granted)
+                {
+                    Console.WriteLine("Permission de localisation refusée.");
+                    return null;
+                }
+            }
+
+            var location = await Geolocation.GetLocationAsync(new GeolocationRequest(GeolocationAccuracy.Medium));
+
+            if (location != null)
+            {
+                Console.WriteLine($"Latitude: {location.Latitude}, Longitude: {location.Longitude}");
+                return location;
+            }
+            else
+            {
+                Console.WriteLine("Impossible d'obtenir la localisation.");
+                return null;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Erreur lors de la récupération de la position : {ex.Message}");
+            return null;
+        }
+    }
+
+    private async Task CheckDatabaseConnection()
+    {
+        bool canConnect = await AppService.CanConnectToDatabase();
+        connectionMessage = canConnect ? "Connecté" : "Déconnecté";
+    }
+
+    private async Task Logout()
+    {
+        await AppService.Logout();
+        isUserConnected = false;
+        statutUser = "Déconnecté";
+        StateHasChanged();
+        Navigation.NavigateTo(AppRoutes.Login, true);
+    }
+}

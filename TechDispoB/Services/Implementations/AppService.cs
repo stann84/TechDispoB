@@ -1,4 +1,6 @@
 ﻿using System.Net.Http.Json;
+using System.Security.Claims;
+using System.Text;
 using System.Text.Json;
 using TechDispoB.Models;
 
@@ -83,6 +85,28 @@ namespace TechDispoB.Services.Implementations
             OnAuthStateChanged?.Invoke(); // Notifie Blazor
 
         }
+        public async Task<bool> UpdateUserLocationAsync(string userId, double latitude, double longitude)
+        {
+            //var httpClient = new HttpClient();
+            var url = $"{Apis.GetUserLocation}/{userId}";
+
+            var data = new
+            {
+                Latitude = latitude,
+                Longitude = longitude
+            };
+            var json = JsonSerializer.Serialize(data);
+            var content = new StringContent(json, Encoding.UTF8, "application/Json");
+
+            var response = await _httpClient.PutAsync(url, content);
+
+            return response.IsSuccessStatusCode;
+        }
+
+        public async Task<UserDto> GetUserById(string userId)
+        {
+            return await _httpClient.GetFromJsonAsync<UserDto>($"{Apis.GetUserById}/{userId}") ?? new UserDto();
+        }
         // Missions
 
         public async Task<List<MissionDto>> GetMissions()
@@ -95,7 +119,7 @@ namespace TechDispoB.Services.Implementations
         }
         public async Task<List<MissionDto>> GetMissionsForUserAsync(string userId)
         {
-            return await _httpClient.GetFromJsonAsync<List<MissionDto>>($"/api/mission/user/{userId}") ?? new List<MissionDto>();
+            return await _httpClient.GetFromJsonAsync<List<MissionDto>>($"{Apis.GetMissionsForUser}/{userId}")?? new List<MissionDto>();
         }
 
 

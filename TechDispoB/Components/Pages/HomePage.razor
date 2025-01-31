@@ -3,21 +3,24 @@
 @inject IAppService AppService
 @inject NavigationManager Navigation
 
-<h1>Accueil</h1> 
+<h1>Paramètres</h1>
 
-<p>Connexion a la base de donnée : @connectionMessage</p>
-<p>Vous êtes : @statutUser</p>
+<h5>Connexion à la base de données : @connectionMessage</h5>
+<h5>Vous êtes : @statutUser</h5>
+
 
 @if (isUserConnected)
 {
-    <button @onclick="Logout" class="btn btn-danger">Déconnexion</button>
+        <button @onclick="Logout" class="btn btn-danger">Déconnexion</button>
 }
 else
 {
-    <NavLink class="btn btn-primary" href="@AppRoutes.Login">Se connecter</NavLink>
+        <NavLink class="btn btn-primary" href="@AppRoutes.Login">Se connecter</NavLink>
 }
 
-@code {
+@code
+{
+    private UserDto user = new();
     private string connectionMessage = "En attente de la vérification...";
     private string statutUser = "Déconnecté";
     private bool isUserConnected = false;
@@ -26,7 +29,46 @@ else
     {
         await CheckDatabaseConnection();
         isUserConnected = await AppService.IsAuthenticated();
-        statutUser = isUserConnected ?  "Authentifié" : "Non Authentifié";
+        statutUser = isUserConnected ? "Authentifié" : "Non Authentifié";
+
+        // 📌 🔥 Met à jour l'UI après chargement
+        StateHasChanged();
+    }
+
+    public async Task<Location?> GetUserLocationAsync()
+    {
+        try
+        {
+            var permissionStatus = await Permissions.CheckStatusAsync<Permissions.LocationWhenInUse>();
+
+            if (permissionStatus != PermissionStatus.Granted)
+            {
+                permissionStatus = await Permissions.RequestAsync<Permissions.LocationWhenInUse>();
+                if (permissionStatus != PermissionStatus.Granted)
+                {
+                    Console.WriteLine("Permission de localisation refusée.");
+                    return null;
+                }
+            }
+
+            var location = await Geolocation.GetLocationAsync(new GeolocationRequest(GeolocationAccuracy.Medium));
+
+            if (location != null)
+            {
+                Console.WriteLine($"Latitude: {location.Latitude}, Longitude: {location.Longitude}");
+                return location;
+            }
+            else
+            {
+                Console.WriteLine("Impossible d'obtenir la localisation.");
+                return null;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Erreur lors de la récupération de la position : {ex.Message}");
+            return null;
+        }
     }
 
     private async Task CheckDatabaseConnection()
@@ -42,6 +84,5 @@ else
         statutUser = "Déconnecté";
         StateHasChanged();
         Navigation.NavigateTo(AppRoutes.Login, true);
-        
     }
 }

@@ -14,7 +14,12 @@ namespace TechDispoB.Models
         [JsonPropertyName("email")]
         public string Email { get; set; } = string.Empty;
         [JsonPropertyName("username")]
-        public string Username { get; set; } = string.Empty;
+        public string UserName { get; set; } = string.Empty;
+        [JsonPropertyName("latitude")]
+        public double Latitude { get; set; }
+
+        [JsonPropertyName("longitude")]
+        public double Longitude { get; set; }
         [JsonPropertyName("city")]
         public string City { get; set; } = string.Empty; // Ville
     }
