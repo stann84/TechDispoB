@@ -5,7 +5,7 @@
         //users
         public const string Login = "user/login";
         public const string CheckDatabaseConnection = "user/connectdatabase";
-        public const string GetUserLocation = "user/{userId}/location";
+        public const string UpdateUserLocation = "user/location";
         public const string GetUserById = "user";
 
         //missions

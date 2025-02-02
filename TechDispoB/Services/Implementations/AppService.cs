@@ -87,21 +87,28 @@ namespace TechDispoB.Services.Implementations
         }
         public async Task<bool> UpdateUserLocationAsync(string userId, double latitude, double longitude)
         {
-            //var httpClient = new HttpClient();
-            var url = $"{Apis.GetUserLocation}/{userId}";
+            var url = $"{Apis.UpdateUserLocation}/{userId}/location";
 
             var data = new
             {
                 Latitude = latitude,
                 Longitude = longitude
             };
+
             var json = JsonSerializer.Serialize(data);
-            var content = new StringContent(json, Encoding.UTF8, "application/Json");
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
 
             var response = await _httpClient.PutAsync(url, content);
 
+            if (!response.IsSuccessStatusCode)
+            {
+                var errorContent = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"Erreur lors de la mise à jour de la localisation : {response.StatusCode} - {errorContent}");
+            }
+
             return response.IsSuccessStatusCode;
         }
+
 
         public async Task<UserDto> GetUserById(string userId)
         {

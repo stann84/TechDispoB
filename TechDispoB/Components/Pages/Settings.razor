@@ -6,8 +6,8 @@
 <h1 class="text-2xl font-bold mb-4">Paramètres</h1>
 
 <div class="mb-6">
-    <p> <span class="@(connectionMessage == "Connecté" ? "text-green-600" : "text-red-600")">@connectionMessage</span></p>
-    <p><span class="font-semibold">Statut :</span> <span class="@(isUserConnected ? "text-green-600" : "text-red-600")">@statutUser</span></p>
+    <p> <span class="@(connectionMessage == "Connecté")">@connectionMessage</span></p>
+    <p><span class="font-semibold">Statut :</span> <span class="@(isUserConnected)">@statutUser</span></p>
 </div>
 
 @if (user != null)
@@ -38,20 +38,20 @@
 }
 else
 {
-    <div class="bg-red-100 text-red-800 p-4 rounded-md mb-4">
+    <div class="p-4 rounded-md mb-4">
         <p>Aucune information utilisateur trouvée.</p>
     </div>
 }
 
 @if (isUserConnected)
 {
-    <button @onclick="Logout" class="btn btn-danger mt-4 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition duration-200">
+    <button @onclick="Logout" class="btn btn-danger mt-4 px-4 py-2">
         Déconnexion
     </button>
 }
 else
 {
-    <NavLink class="btn btn-primary mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition duration-200" href="@AppRoutes.Login">
+    <NavLink class="btn btn-primary mt-4 px-4 py-2" href="@AppRoutes.Login">
         Se connecter
     </NavLink>
 }
@@ -94,6 +94,8 @@ else
                     else
                     {
                         Console.WriteLine("Erreur lors de la mise à jour de la localisation.");
+                        user.Latitude = location.Latitude;
+                        user.Longitude = location.Longitude;
                     }
                 }
             }
