@@ -11,7 +11,7 @@
 
             return new HttpClient(handler)
             {
-                BaseAddress = new Uri("https://9f5d-2a01-e0a-1d4-b530-d06c-c13-2fc7-d6ab.ngrok-free.app/api/")
+                BaseAddress = new Uri("https://79cd-2a01-e0a-1d4-b530-d4dc-607-4cda-28ca.ngrok-free.app/api/")
             };
         }
     }

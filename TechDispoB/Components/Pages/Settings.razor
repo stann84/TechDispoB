@@ -6,8 +6,15 @@
 <h1 class="text-2xl font-bold mb-4">Paramètres</h1>
 
 <div class="mb-6">
-    <p> <span class="@(connectionMessage == "Connecté")">@connectionMessage</span></p>
-    <p><span class="font-semibold">Statut :</span> <span class="@(isUserConnected)">@statutUser</span></p>
+    <p>
+        <span class="@(connectionMessage == "Connecté" ? "text-green-600" : "text-red-600")">
+            @connectionMessage
+        </span>
+    </p>
+    <p>
+        <span class="font-semibold">Statut :</span>
+        <span>@statutUser</span>
+    </p>
 </div>
 
 @if (user != null)
@@ -15,24 +22,28 @@
     <div class="bg-white shadow-md rounded-lg p-6 mb-4">
         <h2 class="text-xl font-semibold mb-4">Informations Utilisateur</h2>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div><span class="font-semibold">📇 ID :</span> @user.Id</div>
+            <div><span class="font-semibold">📧 Email :</span> @user.Email</div>
+            <div><span class="font-semibold">👤 Nom d'utilisateur :</span> @user.UserName</div>
             <div>
-                <span class="font-semibold">📇 ID :</span> @user.Id
+                <span class="font-semibold">📍 Latitude :</span>
+                <input type="number" class="border p-1" @bind="user.Latitude" />
             </div>
             <div>
-                <span class="font-semibold">📧 Email :</span> @user.Email
+                <span class="font-semibold">📍 Longitude :</span>
+                <input type="number" class="border p-1" @bind="user.Longitude" />
             </div>
             <div>
-                <span class="font-semibold">👤 Nom d'utilisateur :</span> @user.UserName
+                <span class="font-semibold">🏙️ Ville :</span> @user.City               
             </div>
-            <div>
-                <span class="font-semibold">📍 Latitude :</span> @(user.Latitude != 0 ? user.Latitude : "Non disponible")
-            </div>
-            <div>
-                <span class="font-semibold">📍 Longitude :</span> @(user.Longitude != 0 ? user.Longitude : "Non disponible")
-            </div>
-            <div>
-                <span class="font-semibold">🏙️ Ville :</span> @(string.IsNullOrEmpty(user.City) ? "Non disponible" : user.City)
-            </div>
+        </div>
+        <div class="mt-4">
+            <button @onclick="RefreshLocation" class="btn btn-secondary mr-2">
+                Rafraîchir localisation
+            </button>
+            <button @onclick="UpdateLocation" class="btn btn-primary">
+                Mettre à jour
+            </button>
         </div>
     </div>
 }
@@ -56,69 +67,46 @@ else
     </NavLink>
 }
 
-@code
-{
+@code {
     private UserDto user = new();
-    private string connectionMessage = "Récuperation des données...";
+    private string connectionMessage = "Récupération des données...";
     private string statutUser = "Déconnecté";
     private bool isUserConnected = false;
 
     protected override async Task OnInitializedAsync()
     {
         await CheckDatabaseConnection();
+        await LoadUserData();
         isUserConnected = await AppService.IsAuthenticated();
         statutUser = isUserConnected ? "Authentifié" : "Non Authentifié";
-
-        var userId = await SecureStorage.GetAsync("userId");
-
-        if (!string.IsNullOrEmpty(userId))
-        {
-            // 📌 🔥 Récupération des informations de l'utilisateur avec un GUID (string)
-            user = await AppService.GetUserById(userId);
-
-            if (user != null)
-            {
-                Console.WriteLine($"Utilisateur récupéré : {user.Email}");
-
-                // 📌 🔥 Récupération de la localisation et mise à jour API
-                var location = await GetUserLocationAsync();
-                if (location != null)
-                {
-                    bool success = await AppService.UpdateUserLocationAsync(userId, location.Latitude, location.Longitude);
-                    if (success)
-                    {
-                        Console.WriteLine("Position mise à jour sur l'API !");
-                        user.Latitude = location.Latitude;
-                        user.Longitude = location.Longitude;
-                    }
-                    else
-                    {
-                        Console.WriteLine("Erreur lors de la mise à jour de la localisation.");
-                        user.Latitude = location.Latitude;
-                        user.Longitude = location.Longitude;
-                    }
-                }
-            }
-            else
-            {
-                Console.WriteLine("L'utilisateur n'a pas été trouvé.");
-            }
-        }
-        else
-        {
-            Console.WriteLine("Impossible de récupérer l'ID utilisateur depuis SecureStorage.");
-        }
-
-        // 📌 🔥 Met à jour l'UI après chargement
-        StateHasChanged();
     }
 
+    /// <summary>
+    /// Charge les données utilisateur à partir du SecureStorage et du service.
+    /// </summary>
+    private async Task LoadUserData()
+    {
+        var userId = await SecureStorage.GetAsync("userId");
+        if (string.IsNullOrEmpty(userId))
+        {
+            Console.WriteLine("Impossible de récupérer l'ID utilisateur depuis SecureStorage.");
+            return;
+        }
+        user = await AppService.GetUserById(userId);
+        if (user == null)
+        {
+            Console.WriteLine("L'utilisateur n'a pas été trouvé.");
+        }
+    }
+
+    /// <summary>
+    /// Récupère la localisation via le service de géolocalisation.
+    /// </summary>
     public async Task<Location?> GetUserLocationAsync()
     {
         try
         {
             var permissionStatus = await Permissions.CheckStatusAsync<Permissions.LocationWhenInUse>();
-
             if (permissionStatus != PermissionStatus.Granted)
             {
                 permissionStatus = await Permissions.RequestAsync<Permissions.LocationWhenInUse>();
@@ -128,19 +116,16 @@ else
                     return null;
                 }
             }
-
             var location = await Geolocation.GetLocationAsync(new GeolocationRequest(GeolocationAccuracy.Medium));
-
             if (location != null)
             {
                 Console.WriteLine($"Latitude: {location.Latitude}, Longitude: {location.Longitude}");
-                return location;
             }
             else
             {
                 Console.WriteLine("Impossible d'obtenir la localisation.");
-                return null;
             }
+            return location;
         }
         catch (Exception ex)
         {
@@ -149,18 +134,60 @@ else
         }
     }
 
+    /// <summary>
+    /// Met à jour la localisation automatiquement en utilisant le service de géolocalisation.
+    /// Les champs liés via @bind sont mis à jour.
+    /// </summary>
+    private async Task RefreshLocation()
+    {
+        var location = await GetUserLocationAsync();
+        if (location != null)
+        {
+            user.Latitude = location.Latitude;
+            user.Longitude = location.Longitude;
+            StateHasChanged();
+        }
+    }
+
+    /// <summary>
+    /// Envoie la localisation (ainsi que d'autres informations modifiées) à l'API via le service.
+    /// </summary>
+    private async Task UpdateLocation()
+    {
+        var userId = await SecureStorage.GetAsync("userId");
+        if (string.IsNullOrEmpty(userId))
+        {
+            Console.WriteLine("Impossible de récupérer l'ID utilisateur depuis SecureStorage.");
+            return;
+        }
+        bool success = await AppService.UpdateUserLocationAsync(userId, user.Latitude, user.Longitude);
+        if (success)
+        {
+            Console.WriteLine("Position mise à jour sur l'API !");
+        }
+        else
+        {
+            Console.WriteLine("Erreur lors de la mise à jour de la localisation côté API");
+        }
+    }
+
+    /// <summary>
+    /// Vérifie la connexion à la base de données.
+    /// </summary>
     private async Task CheckDatabaseConnection()
     {
         bool canConnect = await AppService.CanConnectToDatabase();
         connectionMessage = canConnect ? "Connecté" : "Déconnecté";
     }
 
+    /// <summary>
+    /// Déconnecte l'utilisateur et redirige vers la page de connexion.
+    /// </summary>
     private async Task Logout()
     {
         await AppService.Logout();
         isUserConnected = false;
         statutUser = "Déconnecté";
-        StateHasChanged();
         Navigation.NavigateTo(AppRoutes.Login, true);
     }
 }
