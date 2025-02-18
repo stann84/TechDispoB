@@ -56,9 +56,11 @@
 
     private async Task ShowAlert(string title, string message)
     {
-        if (App.Current?.MainPage != null)
+        var currentPage = App.Current?.Windows.FirstOrDefault()?.Page;
+
+        if (currentPage != null)
         {
-            await App.Current.MainPage.DisplayAlert(title, message, "OK");
+            await currentPage.DisplayAlert(title, message, "OK");
         }
         else
         {

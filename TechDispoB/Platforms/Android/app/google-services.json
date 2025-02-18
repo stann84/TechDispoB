@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "670081688457",
+    "project_id": "techdispo-a48c9",
+    "storage_bucket": "techdispo-a48c9.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:670081688457:android:bbdd7df45bebb8a30a7758",
+        "android_client_info": {
+          "package_name": "com.techdispob"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA43gKv0OW9_4PioIMbLBg44WwuTiFI9GQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
