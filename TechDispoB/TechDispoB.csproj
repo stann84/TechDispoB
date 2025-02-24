@@ -17,6 +17,10 @@
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">24.0</SupportedOSPlatformVersion>
 	</PropertyGroup>
 
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net9.0-android|AnyCPU'">
+	  <EmbedAssembliesIntoApk>True</EmbedAssembliesIntoApk>
+	</PropertyGroup>
+
 	<ItemGroup>
 		<MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4" />
 		<MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#512BD4" BaseSize="128,128" />
@@ -44,10 +48,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Content Include="google-services.json.old" />
-	</ItemGroup>
-
-	<ItemGroup>
 		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="9.0.2" />
 		<PackageReference Include="Microsoft.Azure.NotificationHubs" Version="4.2.0" />
 		<PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="9.0.2" />
@@ -58,7 +58,7 @@
 		<PackageReference Include="Plugin.Firebase.CloudMessaging" Version="3.1.2" />
 	</ItemGroup>
 	<ItemGroup Condition="'$(TargetFramework)' == 'net9.0-android'">
-  		<GoogleServicesJson Include="google-services.json.old" />
+  		<GoogleServicesJson Include="google-services.json" />
   		<PackageReference Include="Xamarin.Firebase.Analytics">
   		  <Version>122.2.0</Version>
   		</PackageReference>
