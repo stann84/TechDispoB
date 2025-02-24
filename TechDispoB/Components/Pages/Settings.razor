@@ -1,4 +1,5 @@
 ﻿@page "/settings"
+@using Plugin.Firebase.CloudMessaging
 @using TechDispoB.Services
 @inject IAppService AppService
 @inject NavigationManager Navigation
@@ -53,25 +54,34 @@ else
         <p>Aucune information utilisateur trouvée.</p>
     </div>
 }
+<h4>Token Firebase</h4>
+<button @onclick="ShowToken" class="btn btn-success mt-4 px-4 py-2">
+    Token Firebase : 
+</button>
 
-@if (isUserConnected)
-{
-    <button @onclick="Logout" class="btn btn-danger mt-4 px-4 py-2">
-        Déconnexion
-    </button>
-}
-else
-{
-    <NavLink class="btn btn-primary mt-4 px-4 py-2" href="@AppRoutes.Login">
-        Se connecter
-    </NavLink>
-}
+<p>
+
+    @if (isUserConnected)
+    {
+        <button @onclick="Logout" class="btn btn-danger mt-4 px-4 py-2">
+            Déconnexion
+        </button>
+    }
+    else
+    {
+        <NavLink class="btn btn-primary mt-4 px-4 py-2" href="@AppRoutes.Login">
+            Se connecter
+        </NavLink>
+    }
+</p>
+
 
 @code {
     private UserDto user = new();
     private string connectionMessage = "Récupération des données...";
     private string statutUser = "Déconnecté";
     private bool isUserConnected = false;
+    private string firebaseToken = "Cliquez pour récupérer le token";
 
     protected override async Task OnInitializedAsync()
     {
@@ -189,5 +199,116 @@ else
         isUserConnected = false;
         statutUser = "Déconnecté";
         Navigation.NavigateTo(AppRoutes.Login, true);
+    }
+
+
+
+    // private async Task GetToken()
+    // {
+    //     #if Android || IOS
+    //     await CrossFirebaseCloudMessaging.Current.CheckIfValidAsync();
+    //     var token = await CrossFirebaseCloudMessaging.Current.GetTokenAsync();
+    //      Console.WriteLine($"🔥 Token Firebase : {token}");
+    //     // share token
+    //     await Share.RequestAsync(new ShareTextRequest
+    //         {
+    //             Text = token,
+    //             Title = "Share firebase Token"
+    //         });
+    //     #endif
+    // }
+//     private async Task GetToken()
+//     {
+//         try
+//         {
+//             #if ANDROID || IOS
+//             await CrossFirebaseCloudMessaging.Current.CheckIfValidAsync();
+//             var token = await CrossFirebaseCloudMessaging.Current.GetTokenAsync();
+
+//             if (!string.IsNullOrEmpty(token))
+//             {
+//                 firebaseToken = token;
+//                 Console.WriteLine($"🔥 Token Firebase : {token}");
+
+//                 // Partage du token si besoin
+//                 await Share.RequestAsync(new ShareTextRequest
+//                 {
+//                     Text = token,
+//                     Title = "Partager le Token Firebase"
+//                 });
+
+//                 // Met à jour l'interface Blazor
+//                 StateHasChanged();
+//             }
+//             else
+//             {
+//                 firebaseToken = "Aucun token généré.";
+//                 Console.WriteLine("❌ Aucun token Firebase généré !");
+//                 StateHasChanged();
+//             }
+//             #else
+//             firebaseToken = "Non supporté sur cette plateforme.";
+//             StateHasChanged();
+//             #endif
+//         }
+//         catch (Exception ex)
+//         {
+//             firebaseToken = "Erreur : " + ex.Message;
+//             Console.WriteLine($"🔥 Erreur lors de la récupération du token : {ex.Message}");
+//             await ShowAlert("Erreur", "Erreur lors de la récupération du token");
+//             StateHasChanged();
+//         }
+//     }
+//         private async Task ShowAlert(string title, string message)
+//     {
+//         #if ANDROID || IOS
+//             await Application.Current.MainPage.DisplayAlert(title, message, "OK");
+//         #else
+//             await JS.InvokeVoidAsync("alert", message);
+//         #endif
+// }
+
+private async Task ShowToken()
+    {
+        try
+        {
+            #if ANDROID 
+            await CrossFirebaseCloudMessaging.Current.CheckIfValidAsync();
+            await Task.Delay(3000);
+            var token = await CrossFirebaseCloudMessaging.Current.GetTokenAsync();
+            Console.WriteLine($"token  : {token}");
+
+            if (!string.IsNullOrEmpty(token))
+            {
+                firebaseToken = token;
+                Console.WriteLine($"🔥 FCM token: {token}");
+
+                // Optionnel : partager le token
+                await Share.RequestAsync(new ShareTextRequest
+                {
+                    Text = token,
+                    Title = "Firebase Token"
+                });
+
+                // Met à jour l'affichage Blazor
+                StateHasChanged();
+            }
+            else
+            {
+                firebaseToken = "Aucun token généré.";
+                Console.WriteLine("❌ Aucun token Firebase généré !");
+                StateHasChanged();
+            }
+            #else
+            firebaseToken = "Non supporté sur cette plateforme.";
+            StateHasChanged();
+            #endif
+        }
+        catch (Exception ex)
+        {
+            firebaseToken = "Erreur : " + ex.Message;
+            Console.WriteLine($"🔥 Erreur lors de la récupération du token : {ex.Message}");
+            StateHasChanged();
+        }
     }
 }
