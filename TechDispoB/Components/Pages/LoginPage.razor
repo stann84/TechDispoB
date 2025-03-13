@@ -43,7 +43,7 @@
         {
             // Récupère les informations de l'utilisateur à partir de la réponse
             var user = loginResponse.User;
-            Console.WriteLine($"Utilisateur : {user.UserName}, Ville : {user.City}");
+            Console.WriteLine($"Utilisateur : {user?.UserName}, Ville : {user?.City}");
             NavManager.NavigateTo(AppRoutes.Missions);
         }
         else
