@@ -1,4 +1,5 @@
 ﻿@page "/login-page"
+@using Plugin.Firebase.CloudMessaging
 @using TechDispoB.Models
 @using TechDispoB.Services
 @using TechDispoB.Services.Implementations
@@ -41,24 +42,32 @@
             // Récupère les informations de l'utilisateur à partir de la réponse
             var user = loginResponse.User;
             Console.WriteLine($"Utilisateur : {user.UserName}, Ville : {user.City}");
-            // recupere le token du mobile
-            // var fcmToken = Preferences.Get("fcm-oken", "");
-            // if (!string.IsNullOrEmpty(fcmToken))
-            // {
-            //     bool success = await HttpClientService.SendFCMTokenAsync(user.Id, fcmToken);
-            //     if (success)
-            //     {
-            //         Console.WriteLine("✅ Token FCM envoyé avec succès !");
-            //     }
-            //     else
-            //     {
-            //         Console.WriteLine("❌ Erreur lors de l'envoi du token FCM.");
-            //     }
-            // }
-            // else
-            // {
-            //     Console.WriteLine("⚠️ Aucun token FCM trouvé sur l’appareil.");
-            // }
+
+            string jwtToken = loginResponse.Token;
+            await SecureStorage.SetAsync("auth_token", jwtToken);
+
+            //recupere le fcmtoken du mobile          
+            var fcmToken = await CrossFirebaseCloudMessaging.Current.GetTokenAsync();
+            
+            if (!string.IsNullOrEmpty(fcmToken))
+            {
+                bool success = await AppService.SendFCMTokenAsync(fcmToken, jwtToken);
+                if (success)
+                {
+                    Console.WriteLine("✅ Token FCM envoyé avec succès !");
+                }
+                else
+                {
+                    Console.WriteLine("❌ Erreur lors de l'envoi du token FCM.");
+                }
+            }
+            else
+            {
+                Console.WriteLine("⚠️ Aucun token FCM trouvé sur l’appareil.");
+            }
+
+
+            StateHasChanged();
 
 
             NavManager.NavigateTo(AppRoutes.Missions);

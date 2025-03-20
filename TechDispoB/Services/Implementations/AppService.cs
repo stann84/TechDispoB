@@ -19,7 +19,6 @@ namespace TechDispoB.Services.Implementations
         {
             try
             {
-                //var response = await _httpClient.GetAsync("/api/connectdatabase");
                 var response = await _httpClient.GetAsync(Apis.CheckDatabaseConnection);
 
                 return response.IsSuccessStatusCode;
@@ -78,6 +77,54 @@ namespace TechDispoB.Services.Implementations
                 return null;
             }
         }
+        public async Task<bool> SendFCMTokenAsync(string fcmToken, string jwtToken)
+        {
+            try
+            {
+                // Vérifier si le token JWT est valide
+                if (string.IsNullOrEmpty(jwtToken))
+                {
+                    Console.WriteLine("❌ Aucun jeton JWT trouvé, annulation de l'envoi du FCM Token.");
+                    return false;
+                }
+
+                if (string.IsNullOrEmpty(fcmToken))
+                {
+                    Console.WriteLine("❌ Aucun FCM Token disponible, annulation.");
+                    return false;
+                }
+
+                var data = new UserDto
+                {
+                    Id = "", // On ne met rien car l'API récupère `userId` via JWT
+                    FCMToken = fcmToken
+                };
+
+                Console.WriteLine($"🔹 JSON envoyé : {JsonSerializer.Serialize(data)}"); // Vérification
+
+                // 🔹 Envoi de la requête avec `PostAsJsonAsync`
+                _httpClient.DefaultRequestHeaders.Authorization =
+                    new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", jwtToken);
+
+                var response = await _httpClient.PostAsJsonAsync(Apis.UpdateFCMToken, data);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    var errorContent = await response.Content.ReadAsStringAsync();
+                    Console.WriteLine($"❌ Erreur lors de l'envoi du token FCM : {response.StatusCode} - {errorContent}");
+                    return false;
+                }
+
+                Console.WriteLine("✅ FCM Token mis à jour avec succès !");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"❌ Erreur lors de l'envoi du token FCM : {ex.Message}");
+                return false;
+            }
+        }
+
         public async Task Logout()
         {
             await SecureStorage.SetAsync("auth_token", ""); // Efface le token
@@ -108,14 +155,12 @@ namespace TechDispoB.Services.Implementations
 
             return response.IsSuccessStatusCode;
         }
-
-
         public async Task<UserDto> GetUserById(string userId)
         {
             return await _httpClient.GetFromJsonAsync<UserDto>($"{Apis.GetUserById}/{userId}") ?? new UserDto();
         }
-        // Missions
 
+        // Missions
         public async Task<List<MissionDto>> GetMissions()
         {
             return await _httpClient.GetFromJsonAsync<List<MissionDto>>(Apis.ListMissions) ?? [];

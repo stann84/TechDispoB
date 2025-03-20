@@ -7,6 +7,7 @@
         public const string CheckDatabaseConnection = "user/connectdatabase";
         public const string UpdateUserLocation = "user/location";
         public const string GetUserById = "user";
+        public const string UpdateFCMToken = "user/updatefcmtoken";
 
         //missions
 

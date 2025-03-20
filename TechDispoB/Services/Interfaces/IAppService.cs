@@ -1,4 +1,5 @@
-﻿using TechDispoB.Models;
+﻿using Newtonsoft.Json.Linq;
+using TechDispoB.Models;
 
 namespace TechDispoB.Services
 {
@@ -8,6 +9,7 @@ namespace TechDispoB.Services
         public Task<LoginResponseDto?> Login(LoginDto loginModel);
         public Task<bool> CanConnectToDatabase();
         public Task<bool> IsAuthenticated();
+        public Task<bool> SendFCMTokenAsync(string fcmToken, string jwtToken);
         public Task Logout();
         public Task<bool> UpdateUserLocationAsync(string userId, double latitude, double longitude);
 

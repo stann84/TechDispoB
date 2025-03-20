@@ -21,6 +21,9 @@ namespace TechDispoB.Models
         [JsonPropertyName("longitude")]
         public double Longitude { get; set; }
         [JsonPropertyName("city")]
-        public string City { get; set; } = string.Empty; // Ville
+        public string City { get; set; } = string.Empty; 
+
+        [JsonPropertyName("fcm_token")]
+        public string? FCMToken { get; set; }
     }
 }
