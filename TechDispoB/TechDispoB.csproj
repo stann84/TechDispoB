@@ -19,6 +19,8 @@
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net9.0-android|AnyCPU'">
 	  <EmbedAssembliesIntoApk>True</EmbedAssembliesIntoApk>
+		<AndroidEnableProfiledAot>false</AndroidEnableProfiledAot>
+		<AndroidUseSharedRuntime>false</AndroidUseSharedRuntime>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -42,9 +44,8 @@
 	  <MauiXaml Remove="Controller\**" />
 	  <None Remove="Controller\**" />
 	</ItemGroup>
-
 	<ItemGroup>
-	  <AndroidResource Remove="Platforms\Android\Resources\values\strings.xml" />
+	  <GoogleServicesJson Include="Platforms\Android\google-services.json" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -59,6 +60,7 @@
 	</ItemGroup>
 	<ItemGroup Condition="'$(TargetFramework)' == 'net9.0-android'">
   		<GoogleServicesJson Include="google-services.json" />
+		<GoogleServicesJson Include="Platforms\Android\google-services.json" />
   		<PackageReference Include="Xamarin.Firebase.Analytics">
   		  <Version>122.2.0</Version>
   		</PackageReference>

@@ -58,7 +58,7 @@ namespace TechDispoB.Services.Implementations
                     PropertyNameCaseInsensitive = true // Pour gérer les différences de casse dans les noms de propriétés
                 });
 
-                if (loginResponse != null && !string.IsNullOrEmpty(loginResponse.Token))
+                if (loginResponse != null && !string.IsNullOrEmpty(loginResponse.Token) && loginResponse.User != null)
                 {
                     // Stocker le jeton dans SecureStorage
                     await SecureStorage.SetAsync("auth_token", loginResponse.Token);
@@ -96,7 +96,7 @@ namespace TechDispoB.Services.Implementations
 
                 var data = new UserDto
                 {
-                    Id = "", // On ne met rien car l'API récupère `userId` via JWT
+                   // Id = "", // On ne met rien car l'API récupère `userId` via JWT
                     FCMToken = fcmToken
                 };
 

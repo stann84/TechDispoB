@@ -11,7 +11,7 @@
 
             return new HttpClient(handler)
             {
-                BaseAddress = new Uri("https://532f-2a01-e0a-1d4-b530-b49c-a704-b46a-cba3.ngrok-free.app/api/")
+                BaseAddress = new Uri("https://a8bb-2a01-e0a-1d4-b530-9d45-f916-ef9f-9f9e.ngrok-free.app/api/")
             };
         }
         //public static async Task<bool> SendFCMTokenAsync(string userId, string fcmToken)
