@@ -11,32 +11,8 @@
 
             return new HttpClient(handler)
             {
-                BaseAddress = new Uri("https://a8bb-2a01-e0a-1d4-b530-9d45-f916-ef9f-9f9e.ngrok-free.app/api/")
+                BaseAddress = new Uri("https://d4b7-2a01-e0a-1d4-b530-4d6f-9378-160f-3f38.ngrok-free.app/api/")
             };
         }
-        //public static async Task<bool> SendFCMTokenAsync(string userId, string fcmToken)
-        //{
-        //    try
-        //    {
-        //        var client = CreateHttpClient();
-
-        //        var data = new Dictionary<string, string>
-        //{
-        //    { "userId", userId },
-        //    { "fcmToken", fcmToken }
-        //};
-
-        //        var content = new FormUrlEncodedContent(data);
-        //        var response = await client.PostAsync("Account/UpdateFCMToken", content);
-
-        //        return response.IsSuccessStatusCode;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Console.WriteLine($"Erreur lors de l'envoi du token FCM: {ex.Message}");
-        //        return false;
-        //    }
-        //}
-
     }
 }
