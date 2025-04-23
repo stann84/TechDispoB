@@ -21,5 +21,8 @@ namespace TechDispoB.Models
 
         [JsonPropertyName("clientName")]
         public string ClientName { get; set; } = "Nom du client";
+
+        [JsonPropertyName("missionStatus")]
+        public MissionStatus Status { get; set; }
     }
 }

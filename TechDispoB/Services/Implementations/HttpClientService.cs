@@ -1,4 +1,6 @@
-﻿namespace TechDispoB.Services.Implementations
+﻿using System.Net.Http.Headers;
+
+namespace TechDispoB.Services.Implementations
 {
     public static class HttpClientService
     {
@@ -9,10 +11,21 @@
                 ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true
             };
 
-            return new HttpClient(handler)
+            var client = new HttpClient(handler)
             {
-                BaseAddress = new Uri("https://d4b7-2a01-e0a-1d4-b530-4d6f-9378-160f-3f38.ngrok-free.app/api/")
+                BaseAddress = new Uri("https://e119-2a01-e0a-1d4-b530-b839-b03f-1f66-bbea.ngrok-free.app/api/")
             };
+
+            // ✅ Ajouter le token JWT s’il existe
+            var token = Preferences.Get("auth_token", string.Empty);
+            if (!string.IsNullOrEmpty(token))
+            {
+                client.DefaultRequestHeaders.Authorization =
+                    new AuthenticationHeaderValue("Bearer", token);
+            }
+
+            return client;
         }
     }
+
 }

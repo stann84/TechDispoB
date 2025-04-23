@@ -3,25 +3,47 @@
 @using TechDispoB.Services
 @inject IAppService AppService
 
-<h3>Détails de la Mission</h3>
+<div style="padding-bottom: 80px;">
+    <div style="flex: 1;">
+        <h3>Détails de la Mission</h3>
 
-@if (mission == null)
-{
-    <p>Chargement des détails...</p>
-}
-else
-{
-    <div>
-        <h4>@mission.Name</h4>
-        <p>@mission.Description</p>
-        <p>Ville : @mission.Ville</p>
-        <p>Date : @mission.StartDate</p>
+        @if (mission == null)
+        {
+            <p>Chargement des détails...</p>
+        }
+        else
+        {
+            <div>
+                <h4>@mission.Name</h4>
+                <p>@mission.Description</p>
+                <p>Ville : @mission.Ville</p>
+                <p>Date : @mission.StartDate</p>
+            </div>
+        }
     </div>
-}
+
+
+
+    <!-- ✅ Bloc des boutons centré en bas -->
+    <div class="fixed-bottom d-flex justify-content-center p-3 bg-white shadow"> 
+            @if (showAlerte)
+            {
+                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    Vous avez déjà accepté cette mission !
+                    <button type="button" class="btn-close" @onclick="()=> showAlerte = false"></button>
+                </div>
+            }
+            <button class="btn btn-success me-3" @onclick="VerifierMission">✅ Accepter</button>
+            <button class="btn btn-danger" @onclick="() => RefuserMission(MissionId)">❌ Refuser</button>
+    </div>
+</div>
+
+
 
 @code {
     [Parameter]
     public int MissionId { get; set; }
+    private bool showAlerte = false;
 
     private MissionDto? mission;
 
@@ -34,6 +56,46 @@ else
         catch (Exception ex)
         {
             Console.WriteLine($"Erreur lors du chargement des détails de la mission : {ex.Message}");
+        }
+    }
+
+    private async Task AccepterMission(int missionId)
+    {
+        try
+        {
+            await AppService.AccepterMission(missionId);
+            
+
+            Console.WriteLine("Requet envoyé avec succès.");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Erreur lors de l'acceptation de la mission : {ex.Message}");
+        }
+    }
+    private async Task RefuserMission(int missionId)
+    {
+        try
+        {
+            await AppService.RefuserMission(missionId);
+            Console.WriteLine("Mission refusée avec succès.");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Erreur lors du refus de la mission : {ex.Message}");
+        }
+    }
+    private async void VerifierMission()
+    {
+        if (mission.Status == MissionStatus.Acceptee)
+        {
+            showAlerte = true; // Affiche le message dans la page
+        }
+        else
+        {
+            await AccepterMission(mission.Id);
+            // Après acceptation, met à jour le statut localement :
+            mission.Status = MissionStatus.Acceptee;
         }
     }
 }

@@ -174,6 +174,21 @@ namespace TechDispoB.Services.Implementations
             return await _httpClient.GetFromJsonAsync<List<MissionDto>>($"{Apis.GetMissionsForUser}/{userId}")?? new List<MissionDto>();
         }
 
+        public async Task<bool> AccepterMission(int missionId)
+        {
+            var url = string.Format(Apis.AcceptMission, missionId);
+            var response = await _httpClient.PostAsync(url, null);
+            return response.IsSuccessStatusCode;
+        }
+
+        public async Task<bool> RefuserMission(int missionId)
+        {
+            var url = string.Format(Apis.RefuseMission, missionId);
+            var response = await _httpClient.PostAsync(url, null);
+            return response.IsSuccessStatusCode;
+        }
+
+
 
     }
 }

@@ -21,6 +21,8 @@ namespace TechDispoB.Services
         public Task<List<MissionDto>> GetMissionsForUserAsync(string userId);
 
         public Task<UserDto> GetUserById(string userId);
+        public Task<bool> AccepterMission(int missionId);
+        public Task<bool> RefuserMission(int missionId);
 
     }
 }
