@@ -6,6 +6,10 @@
 <div style="padding-bottom: 80px;">
     <div style="flex: 1;">
         <h3>Détails de la Mission</h3>
+        @if (mission != null)
+        {
+            <p><strong>Statut mission :</strong> @mission.Status</p>
+        }
 
         @if (mission == null)
         {
@@ -21,6 +25,7 @@
             </div>
         }
     </div>
+
     @if (showAlerte)
     {
         <div class="alert alert-warning alert-dismissible fade show" role="alert">
@@ -29,26 +34,54 @@
         </div>
     }
 
-
-    <!-- ✅ Bloc des boutons centré en bas -->
-       <div class="fixed-bottom d-flex justify-content-center p-3 bg-white shadow">
-
-        <button class="btn btn-success me-3" @onclick="VerifierMission">✅ Accepter</button>
-        <button class="btn btn-danger" @onclick="() => RefuserMission(MissionId)">❌ Refuser</button>
-
-    </div>
+    @if (mission != null)
+    {
+        <div class="fixed-bottom d-flex justify-content-center p-3 bg-white shadow">
+            @if (mission.Status == MissionStatus.AttenteValidation)
+            {
+                <button class="btn btn-success me-3" @onclick="VerifierMission">✅ Accepter</button>
+                <button class="btn btn-danger" @onclick="RefuserMission">❌ Refuser</button>
+            }
+            else if (mission.Status == MissionStatus.Acceptee)
+            {
+                @if (mission.StartDate.Date == DateTime.Today)
+                {
+                    <button class="btn btn-primary me-3" @onclick="CommencerMission">▶️ Commencer</button>
+                }
+                else
+                {
+                    <button class="btn btn-secondary" disabled>⏳ En attente du jour J</button>
+                }
+            }
+            else if (mission.Status == MissionStatus.EnCours)
+            {
+                <button class="btn btn-success me-3" @onclick="CloturerMission">✅ Clôturer</button>
+            }
+            else if (mission.Status == MissionStatus.Cloturee)
+            {
+                <span class="text-muted">Mission clôturée. En attente de validation.</span>
+            }
+            else if (mission.Status == MissionStatus.Terminee)
+            {
+                <span class="text-success fw-bold">Mission terminée ✅</span>
+            }
+            else if (mission.Status == MissionStatus.Annulee)
+            {
+                <span class="text-danger fw-bold">Mission annulée ❌</span>
+            }
+        </div>
+    }
 </div>
-
-
 
 @code {
     [Parameter]
     public int MissionId { get; set; }
-    private bool showAlerte = false;
 
     private MissionDto? mission;
+    private bool showAlerte = false;
 
-    protected override async Task OnInitializedAsync()
+    // ✅ Méthode centrale pour charger la mission
+    private async Task ChargerMission()
     {
         try
         {
@@ -56,47 +89,60 @@
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Erreur lors du chargement des détails de la mission : {ex.Message}");
+            Console.WriteLine($"Erreur lors du chargement : {ex.Message}");
         }
     }
 
-    private async Task AccepterMission(int missionId)
+    protected override async Task OnInitializedAsync()
     {
-        try
+        await ChargerMission(); // Chargement initial
+        if (mission == null)
         {
-            await AppService.AccepterMission(missionId);
-            
-
-            Console.WriteLine("Requet envoyé avec succès.");
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Erreur lors de l'acceptation de la mission : {ex.Message}");
-        }
-    }
-    private async Task RefuserMission(int missionId)
-    {
-        try
-        {
-            await AppService.RefuserMission(missionId);
-            Console.WriteLine("Mission refusée avec succès.");
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Erreur lors du refus de la mission : {ex.Message}");
-        }
-    }
-    private async void VerifierMission()
-    {
-        if (mission.Status == MissionStatus.Acceptee)
-        {
-            showAlerte = true; // Affiche le message dans la page
+            Console.WriteLine("⚠️ La mission est NULL après le chargement !");
         }
         else
         {
-            await AccepterMission(mission.Id);
-            // Après acceptation, met à jour le statut localement :
-            mission.Status = MissionStatus.Acceptee;
+            Console.WriteLine($"✅ Mission chargée : {mission.Name}, Statut : {mission.Status}");
+        }
+    }
+
+    private async Task VerifierMission()
+    {
+        if (mission != null && mission.Status == MissionStatus.Acceptee)
+        {
+            showAlerte = true; // Alerte si déjà acceptée
+        }
+        else
+        {
+            await AccepterMission();
+        }
+    }
+
+    private async Task AccepterMission()
+    {
+        try
+        {
+            await AppService.AccepterMission(MissionId);
+            await ChargerMission(); // Recharge la mission après action
+            Console.WriteLine("Mission acceptée.");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Erreur lors de l'acceptation : {ex.Message}");
+        }
+    }
+
+    private async Task RefuserMission()
+    {
+        try
+        {
+            await AppService.RefuserMission(MissionId);
+            await ChargerMission(); // Recharge après refus
+            Console.WriteLine("Mission refusée.");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Erreur lors du refus : {ex.Message}");
         }
     }
 
@@ -105,24 +151,26 @@
         try
         {
             await AppService.CommencerMission(MissionId);
-            mission.Status = MissionStatus.EnCours;
+            await ChargerMission(); // Recharge après commencer
+            Console.WriteLine("Mission commencée.");
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Erreur lors du démarrage de la mission : {ex.Message}");
+            Console.WriteLine($"Erreur au démarrage : {ex.Message}");
         }
     }
 
-    private async Task CloturerMission(int MissionId)
+    private async Task CloturerMission()
     {
         try
         {
             await AppService.CloturerMission(MissionId);
-            //mission.Status = MissionStatus.Cloturee;
+            await ChargerMission(); // Recharge après clôture
+            Console.WriteLine("Mission clôturée.");
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Erreur lors de la clôture de la mission : {ex.Message}");
+            Console.WriteLine($"Erreur à la clôture : {ex.Message}");
         }
     }
 }

@@ -192,7 +192,14 @@ namespace TechDispoB.Services.Implementations
         {
             var url = string.Format(Apis.CommencerMission, missionId);
             var response = await _httpClient.PostAsync(url, null);
-            return response.IsSuccessStatusCode;
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await response.Content.ReadAsStringAsync();
+                throw new Exception($"Erreur API : {error}");
+            }
+
+            return true;
         }
 
         public async Task<bool> CloturerMission(int missionId)

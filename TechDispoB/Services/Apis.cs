@@ -14,8 +14,8 @@
         public const string ListMissions = "mission/get-missions";
         public const string GetMissionById = "mission/{id}";
         public const string GetMissionsForUser = "mission/user";
-        public const string AcceptMission = "mission/{0}/accept";
-        public const string RefuseMission = "mission/{0}/refuse";
+        public const string AcceptMission = "mission/{0}/accepter";
+        public const string RefuseMission = "mission/{0}/refuser";
         public const string CommencerMission = "mission/{0}/commencer";
         public const string CloturerMission = "mission/{0}/cloturer";
 

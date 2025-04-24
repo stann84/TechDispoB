@@ -12,6 +12,7 @@ namespace TechDispoB.Models
         AttenteValidation,
         Acceptee,
         EnCours,
+        Cloturee,
         Terminee,
         Annulee
     }
