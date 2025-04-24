@@ -21,20 +21,21 @@
             </div>
         }
     </div>
-
+    @if (showAlerte)
+    {
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            Vous avez déjà accepté cette mission !
+            <button type="button" class="btn-close" @onclick="()=> showAlerte = false"></button>
+        </div>
+    }
 
 
     <!-- ✅ Bloc des boutons centré en bas -->
-    <div class="fixed-bottom d-flex justify-content-center p-3 bg-white shadow"> 
-            @if (showAlerte)
-            {
-                <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                    Vous avez déjà accepté cette mission !
-                    <button type="button" class="btn-close" @onclick="()=> showAlerte = false"></button>
-                </div>
-            }
-            <button class="btn btn-success me-3" @onclick="VerifierMission">✅ Accepter</button>
-            <button class="btn btn-danger" @onclick="() => RefuserMission(MissionId)">❌ Refuser</button>
+       <div class="fixed-bottom d-flex justify-content-center p-3 bg-white shadow">
+
+        <button class="btn btn-success me-3" @onclick="VerifierMission">✅ Accepter</button>
+        <button class="btn btn-danger" @onclick="() => RefuserMission(MissionId)">❌ Refuser</button>
+
     </div>
 </div>
 
@@ -96,6 +97,32 @@
             await AccepterMission(mission.Id);
             // Après acceptation, met à jour le statut localement :
             mission.Status = MissionStatus.Acceptee;
+        }
+    }
+
+    private async Task CommencerMission()
+    {
+        try
+        {
+            await AppService.CommencerMission(MissionId);
+            mission.Status = MissionStatus.EnCours;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Erreur lors du démarrage de la mission : {ex.Message}");
+        }
+    }
+
+    private async Task CloturerMission(int MissionId)
+    {
+        try
+        {
+            await AppService.CloturerMission(MissionId);
+            //mission.Status = MissionStatus.Cloturee;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Erreur lors de la clôture de la mission : {ex.Message}");
         }
     }
 }

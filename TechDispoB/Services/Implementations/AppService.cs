@@ -188,6 +188,19 @@ namespace TechDispoB.Services.Implementations
             return response.IsSuccessStatusCode;
         }
 
+        public async Task<bool> CommencerMission(int missionId)
+        {
+            var url = string.Format(Apis.CommencerMission, missionId);
+            var response = await _httpClient.PostAsync(url, null);
+            return response.IsSuccessStatusCode;
+        }
+
+        public async Task<bool> CloturerMission(int missionId)
+        {
+            var url = string.Format(Apis.CloturerMission, missionId);
+            var response = await _httpClient.PostAsync(url, null);
+            return response.IsSuccessStatusCode;
+        }
 
 
     }
