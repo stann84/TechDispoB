@@ -6,13 +6,13 @@
         public const string Login = "user/login";
         public const string CheckDatabaseConnection = "user/connectdatabase";
         public const string UpdateUserLocation = "user/location";
-        public const string GetUserById = "user";
+        public const string GetUserById = "user/{0}";
         public const string UpdateFCMToken = "user/updatefcmtoken";
 
         //missions
 
         public const string ListMissions = "mission/get-missions";
-        public const string GetMissionById = "mission/{id}";
+        public const string GetMissionById = "mission/{0}";
         public const string GetMissionsForUser = "mission/user";
         public const string AcceptMission = "mission/{0}/accepter";
         public const string RefuseMission = "mission/{0}/refuser";

@@ -178,14 +178,28 @@ namespace TechDispoB.Services.Implementations
         {
             var url = string.Format(Apis.AcceptMission, missionId);
             var response = await _httpClient.PostAsync(url, null);
-            return response.IsSuccessStatusCode;
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await response.Content.ReadAsStringAsync();
+                throw new Exception($"Erreur API : {error}");
+            }
+
+            return true;
         }
 
         public async Task<bool> RefuserMission(int missionId)
         {
             var url = string.Format(Apis.RefuseMission, missionId);
             var response = await _httpClient.PostAsync(url, null);
-            return response.IsSuccessStatusCode;
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await response.Content.ReadAsStringAsync();
+                throw new Exception($"Erreur API : {error}");
+            }
+
+            return true;
         }
 
         public async Task<bool> CommencerMission(int missionId)
@@ -206,7 +220,14 @@ namespace TechDispoB.Services.Implementations
         {
             var url = string.Format(Apis.CloturerMission, missionId);
             var response = await _httpClient.PostAsync(url, null);
-            return response.IsSuccessStatusCode;
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await response.Content.ReadAsStringAsync();
+                throw new Exception($"Erreur API : {error}");
+            }
+
+            return true;
         }
 
 
