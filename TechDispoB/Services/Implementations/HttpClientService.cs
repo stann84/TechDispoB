@@ -13,7 +13,7 @@ namespace TechDispoB.Services.Implementations
 
             var client = new HttpClient(handler)
             {
-                BaseAddress = new Uri("https://e119-2a01-e0a-1d4-b530-b839-b03f-1f66-bbea.ngrok-free.app/api/")
+                BaseAddress = new Uri("https://f70f-2a01-e0a-1d4-b530-45ca-f213-6bc8-a871.ngrok-free.app/api/")
             };
 
             // ✅ Ajouter le token JWT s’il existe

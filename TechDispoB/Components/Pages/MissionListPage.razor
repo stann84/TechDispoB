@@ -24,7 +24,11 @@
                         <h5 class="card-title">@mission.Name</h5>
                     </div>
                     <div class="card-body">
-                        <p class="card-text">@mission.Description</p>
+                        <p class="card-text">
+                            @((mission.Description?.Length > 100)
+                                ? mission.Description.Substring(0, 100) + "..."
+                                : mission.Description)
+                        </p>
                         <ul class="list-group list-group-flush">
                             <li class="list-group-item">Ville : @mission.Ville</li>
                             <li class="list-group-item">Distance : 35 km</li>

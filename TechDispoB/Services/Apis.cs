@@ -3,11 +3,11 @@
     internal class Apis
     {
         //users
-        public const string Login = "user/login";
-        public const string CheckDatabaseConnection = "user/connectdatabase";
-        public const string UpdateUserLocation = "user/location";
-        public const string GetUserById = "user/{0}";
-        public const string UpdateFCMToken = "user/updatefcmtoken";
+        public const string Login = "users/login";
+        public const string CheckDatabaseConnection = "users/connectdatabase";
+        public const string UpdateUserLocation = "users/{userId}/location";
+        public const string GetUserById = "users";
+        public const string UpdateFCMToken = "users/updatefcmtoken";
 
         //missions
 
