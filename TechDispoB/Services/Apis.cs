@@ -1,23 +1,28 @@
 ﻿namespace TechDispoB.Services
 {
-    internal class Apis
+    public static class Apis
     {
-        //users
-        public const string Login = "users/login";
-        public const string CheckDatabaseConnection = "users/connectdatabase";
-        public const string UpdateUserLocation = "users/{userId}/location";
-        public const string GetUserById = "users";
-        public const string UpdateFCMToken = "users/updatefcmtoken";
+        // 📂 Routes pour les utilisateurs
+        public static class Users
+        {
+            public const string Base = "users"; // ex: api/users
+            public const string Login = "users/login";
+            public const string CheckDatabaseConnection = "users/connectdatabase";
+            public const string UpdateLocation = "users"; // Tu ajouteras /{userId}/location à la main
+            public const string GetById = "users"; // Tu ajouteras /{userId} aussi
+            public const string UpdateFCMToken = "users/updatefcmtoken";
+        }
 
-        //missions
-
-        public const string ListMissions = "mission/get-missions";
-        public const string GetMissionById = "mission/{0}";
-        public const string GetMissionsForUser = "mission/user";
-        public const string AcceptMission = "mission/{0}/accepter";
-        public const string RefuseMission = "mission/{0}/refuser";
-        public const string CommencerMission = "mission/{0}/commencer";
-        public const string CloturerMission = "mission/{0}/cloturer";
-
+        // 📂 Routes pour les missions
+        public static class Missions
+        {
+            public const string Base = "mission"; // ex: api/mission
+            public const string List = "mission/list";
+            public const string GetByUser = "mission/user";
+            public const string Accept = "mission/accept/{0}";
+            public const string Refuse = "mission/refuse/{0}";
+            public const string Commencer = "mission/commencer/{0}";
+            public const string Cloturer = "mission/cloturer/{0}";
+        }
     }
 }
