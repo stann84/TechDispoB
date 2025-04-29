@@ -1,8 +1,11 @@
 ﻿@page "/settings"
 @using Plugin.Firebase.CloudMessaging
 @using TechDispoB.Services
+@using TechDispoB.Services.Implementations
+@using TechDispoB.Services.Interfaces
 @inject IAppService AppService
 @inject NavigationManager Navigation
+@inject IAuthService AuthService
 
 <h1 class="text-2xl font-bold mb-4">Paramètres</h1>
 
@@ -87,7 +90,7 @@ else
     {
         await CheckDatabaseConnection();
         await LoadUserData();
-        isUserConnected = await AppService.IsAuthenticated();
+        isUserConnected = await AuthService.IsAuthenticated();
         statutUser = isUserConnected ? "Authentifié" : "Non Authentifié";
     }
 
@@ -186,7 +189,7 @@ else
     /// </summary>
     private async Task CheckDatabaseConnection()
     {
-        bool canConnect = await AppService.CanConnectToDatabase();
+        bool canConnect = await AuthService.CanConnectToDatabase();
         connectionMessage = canConnect ? "Connecté" : "Déconnecté";
     }
 
@@ -195,7 +198,8 @@ else
     /// </summary>
     private async Task Logout()
     {
-        await AppService.Logout();
+
+        await AuthService.Logout();
         isUserConnected = false;
         statutUser = "Déconnecté";
         Navigation.NavigateTo(AppRoutes.Login, true);

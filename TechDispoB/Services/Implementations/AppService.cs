@@ -12,38 +12,25 @@ namespace TechDispoB.Services.Implementations
 
         public event Action? OnAuthStateChanged;
 
-        public AppService()
+        public AppService(HttpClient httpClient)
         {
-            _httpClient = HttpClientService.CreateHttpClient();
+            _httpClient = httpClient;
         }
-
-        // 📡 Vérifie si la base de données est accessible
-        public async Task<bool> CanConnectToDatabase()
-        {
-            try
-            {
-                var response = await _httpClient.GetAsync(Apis.Users.CheckDatabaseConnection);
-                return response.IsSuccessStatusCode;
-            }
-            catch
-            {
-                return false;
-            }
-        }
-
-        // 🔐 Vérifie si l'utilisateur est connecté
-        public async Task<bool> IsAuthenticated()
-        {
-            var token = await SecureStorage.GetAsync("auth_token");
-            return !string.IsNullOrEmpty(token);
-        }
-
-        // 🌐 Générique : GET API et désérialisation automatique
+        // 🌐 Générique : Get  API avec données
         public async Task<T?> GetAsync<T>(string url)
         {
             try
             {
-                var response = await _httpClient.GetAsync(url);
+                var token = await SecureStorage.GetAsync("auth_token");
+
+                var request = new HttpRequestMessage(HttpMethod.Get, url);
+
+                if (!string.IsNullOrEmpty(token))
+                {
+                    request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+                }
+
+                var response = await _httpClient.SendAsync(request);
 
                 if (!response.IsSuccessStatusCode)
                 {
@@ -62,13 +49,25 @@ namespace TechDispoB.Services.Implementations
             }
         }
 
+
         // 🌐 Générique : POST API avec données
         public async Task<bool> PostAsync<T>(string url, T data)
         {
             try
             {
-                var content = new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json");
-                var response = await _httpClient.PostAsync(url, content);
+                var token = await SecureStorage.GetAsync("auth_token");
+
+                var request = new HttpRequestMessage(HttpMethod.Post, url)
+                {
+                    Content = new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json")
+                };
+
+                if (!string.IsNullOrEmpty(token))
+                {
+                    request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+                }
+
+                var response = await _httpClient.SendAsync(request);
 
                 if (!response.IsSuccessStatusCode)
                 {
@@ -85,13 +84,25 @@ namespace TechDispoB.Services.Implementations
             }
         }
 
+
         // 🌐 Générique : PUT API avec données
         public async Task<bool> PutAsync<T>(string url, T data)
         {
             try
             {
-                var content = new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json");
-                var response = await _httpClient.PutAsync(url, content);
+                var token = await SecureStorage.GetAsync("auth_token");
+
+                var request = new HttpRequestMessage(HttpMethod.Put, url)
+                {
+                    Content = new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json")
+                };
+
+                if (!string.IsNullOrEmpty(token))
+                {
+                    request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+                }
+
+                var response = await _httpClient.SendAsync(request);
 
                 if (!response.IsSuccessStatusCode)
                 {
@@ -108,12 +119,22 @@ namespace TechDispoB.Services.Implementations
             }
         }
 
+
         // 🌐 Générique : POST API sans contenu
         public async Task<bool> PostWithoutDataAsync(string url)
         {
             try
             {
-                var response = await _httpClient.PostAsync(url, null);
+                var token = await SecureStorage.GetAsync("auth_token");
+
+                var request = new HttpRequestMessage(HttpMethod.Post, url);
+
+                if (!string.IsNullOrEmpty(token))
+                {
+                    request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+                }
+
+                var response = await _httpClient.SendAsync(request);
 
                 if (!response.IsSuccessStatusCode)
                 {
@@ -130,70 +151,6 @@ namespace TechDispoB.Services.Implementations
             }
         }
 
-        // 🛡️ Connexion d'un utilisateur
-        public async Task<LoginResponseDto?> Login(LoginDto loginModel)
-        {
-            try
-            {
-                var response = await _httpClient.PostAsJsonAsync(Apis.Users.Login, loginModel);
-
-                if (!response.IsSuccessStatusCode)
-                {
-                    var errorContent = await response.Content.ReadAsStringAsync();
-                    Console.WriteLine($"Échec de la connexion : {response.StatusCode}, Contenu : {errorContent}");
-                    return null;
-                }
-
-                var loginResponse = await response.Content.ReadFromJsonAsync<LoginResponseDto>(new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true
-                });
-
-                if (loginResponse != null && !string.IsNullOrEmpty(loginResponse.Token))
-                {
-                    await SecureStorage.SetAsync("auth_token", loginResponse.Token);
-                    await SecureStorage.SetAsync("userId", loginResponse.User.Id);
-                    Console.WriteLine("✅ Jeton JWT stocké !");
-                    OnAuthStateChanged?.Invoke();
-                }
-
-                return loginResponse;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Erreur lors de la connexion : {ex.Message}");
-                return null;
-            }
-        }
-
-        // 🔐 Déconnexion
-        public async Task Logout()
-        {
-            await SecureStorage.SetAsync("auth_token", "");
-            Console.WriteLine("Utilisateur déconnecté !");
-            OnAuthStateChanged?.Invoke();
-        }
-
-        // 🔥 Envoie du FCM Token
-        public async Task<bool> SendFCMTokenAsync(string fcmToken, string jwtToken)
-        {
-            try
-            {
-                if (string.IsNullOrEmpty(jwtToken) || string.IsNullOrEmpty(fcmToken))
-                    return false;
-
-                _httpClient.DefaultRequestHeaders.Authorization =
-                    new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", jwtToken);
-
-                var data = new UserDto { FCMToken = fcmToken };
-                return await PostAsync(Apis.Users.UpdateFCMToken, data);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Erreur lors de l'envoi du token FCM : {ex.Message}");
-                return false;
-            }
-        }
 
         // 🔎 Récupère un utilisateur par son ID
         public async Task<UserDto> GetUserById(string userId)

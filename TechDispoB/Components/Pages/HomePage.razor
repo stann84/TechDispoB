@@ -2,8 +2,11 @@
 @using Microsoft.Maui.ApplicationModel
 @using Microsoft.Maui.Devices.Sensors
 @using TechDispoB.Services
+@using TechDispoB.Services.Implementations
+@using TechDispoB.Services.Interfaces
 @inject IAppService AppService
 @inject NavigationManager Navigation
+@inject IAuthService AuthService
 
 <h1>Paramètres</h1>
 
@@ -30,7 +33,7 @@ else
     protected override async Task OnInitializedAsync()
     {
         await CheckDatabaseConnection();
-        isUserConnected = await AppService.IsAuthenticated();
+        isUserConnected = await AuthService.IsAuthenticated();
         statutUser = isUserConnected ? "Authentifié" : "Non Authentifié";
 
         // 📌 🔥 Met à jour l'UI après chargement
@@ -75,13 +78,13 @@ else
 
     private async Task CheckDatabaseConnection()
     {
-        bool canConnect = await AppService.CanConnectToDatabase();
+        bool canConnect = await AuthService.CanConnectToDatabase();
         connectionMessage = canConnect ? "Connecté" : "Déconnecté";
     }
 
     private async Task Logout()
     {
-        await AppService.Logout();
+        await AuthService.Logout();
         isUserConnected = false;
         statutUser = "Déconnecté";
         StateHasChanged();

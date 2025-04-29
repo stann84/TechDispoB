@@ -6,6 +6,8 @@ using TechDispoB.Services;
 using TechDispoB.Services.Implementations;
 using Plugin.Firebase.CloudMessaging;
 using Microsoft.Maui.LifecycleEvents;
+using TechDispoB.Services.Interfaces;
+
 
 
 #if IOS
@@ -31,8 +33,13 @@ namespace TechDispoB
 
             builder.Services.AddMauiBlazorWebView();
 
+            // HttpClient partagé pour tous les services
+            builder.Services.AddScoped(sp => HttpClientService.CreateHttpClient());
+
             // Enregistrer AppService en tant que Singleton
             builder.Services.AddSingleton<IAppService, AppService>();
+
+            builder.Services.AddSingleton<IAuthService, AuthService>();
 
 #if DEBUG
             builder.Services.AddBlazorWebViewDeveloperTools();

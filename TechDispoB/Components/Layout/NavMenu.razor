@@ -1,8 +1,10 @@
 ﻿@using Microsoft.EntityFrameworkCore.Metadata.Internal
 @using TechDispoB.Services
+@using TechDispoB.Services.Implementations
+@using TechDispoB.Services.Interfaces
 @inject IAppService AppService
 @inject NavigationManager Navigation
-
+@inject IAuthService AuthService
 
 <div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
@@ -46,17 +48,17 @@
 
     protected override async Task OnInitializedAsync()
     {
-        isAuthenticated = await AppService.IsAuthenticated();
+        isAuthenticated = await AuthService.IsAuthenticated();
         AppService.OnAuthStateChanged += HandleAuthStateChanged;
     }
     private async void HandleAuthStateChanged()
     {
-        isAuthenticated = await AppService.IsAuthenticated();
+        isAuthenticated = await AuthService.IsAuthenticated();
         StateHasChanged(); // 🔥 Force la mise à jour de l'interface utilisateur
     }
     private async Task Logout()
     {
-        await AppService.Logout();
+        await AuthService.Logout();
         isAuthenticated = false;
         StateHasChanged();
     }
@@ -66,6 +68,6 @@
     }
     protected override async Task OnParametersSetAsync()
     {
-        isAuthenticated = await AppService.IsAuthenticated();
+        isAuthenticated = await AuthService.IsAuthenticated();
     }
 }

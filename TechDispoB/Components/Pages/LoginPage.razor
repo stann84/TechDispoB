@@ -3,8 +3,10 @@
 @using TechDispoB.Models
 @using TechDispoB.Services
 @using TechDispoB.Services.Implementations
+@using TechDispoB.Services.Interfaces
 @inject IAppService AppService
 @inject NavigationManager NavManager
+@inject IAuthService AuthService
 
 <h3>Login</h3>
 
@@ -35,7 +37,7 @@
     private async Task Submit()
     {
         // Appelle le service pour effectuer la connexion
-        var loginResponse = await AppService.Login(loginDto);
+        var loginResponse = await AuthService.Login(loginDto);
 
         if (loginResponse != null)
         {
@@ -51,7 +53,7 @@
             
             if (!string.IsNullOrEmpty(fcmToken))
             {
-                bool success = await AppService.SendFCMTokenAsync(fcmToken, jwtToken);
+                bool success = await AuthService.SendFCMTokenAsync(fcmToken, jwtToken);
                 if (success)
                 {
                     Console.WriteLine("✅ Token FCM envoyé avec succès !");
