@@ -1,0 +1,59 @@
+﻿@page "/change-password"
+@using TechDispoB.Services.Interfaces
+@inject IAuthService AuthService
+@inject NavigationManager NavManager
+
+<EditForm Model="@changerMotDePasse" OnValidSubmit="HandleChange">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div>
+        <h2>C'est votre premiére connexion vous devez personnaliser votre mot de passe</h2>
+    </div>
+
+    <div class="mb-3">
+        <label for="currentPassword" class="form-label">Mot de passe actuel</label>
+        <InputText id="currentPassword" type="password" class="form-control" @bind-Value="changerMotDePasse.CurrentPassword" />
+        <ValidationMessage For="@(() => changerMotDePasse.CurrentPassword)" />
+    </div>
+
+    <div class="mb-3">
+        <label for="newPassword" class="form-label">Nouveau mot de passe</label>
+        <InputText id="newPassword" type="password" class="form-control" @bind-Value="changerMotDePasse.NewPassword" />
+        <ValidationMessage For="@(() => changerMotDePasse.NewPassword)" />
+    </div>
+
+    <div class="mb-3">
+        <label for="confirmPassword" class="form-label">Confirmer mot de passe</label>
+        <InputText id="confirmPassword" type="password" class="form-control" @bind-Value="changerMotDePasse.ConfirmPassword" />
+        <ValidationMessage For="@(() => changerMotDePasse.ConfirmPassword)" />
+    </div>
+
+    @if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <div class="alert alert-danger">@errorMessage</div>
+    }
+
+    <div class="d-flex justify-content-end">
+        <button type="submit" class="btn btn-primary">Valider</button>
+    </div>
+</EditForm>
+
+@code {
+    private ChangerMotDePasseDto changerMotDePasse = new ChangerMotDePasseDto();
+    private string errorMessage = string.Empty;
+
+    private async Task HandleChange()
+    {
+        var success = await AuthService.ChangerMotDePasse(changerMotDePasse);
+        if (success)
+        {
+            // Redirige vers la page de login
+            NavManager.NavigateTo(AppRoutes.Login, forceLoad: true);
+        }
+        else
+        {
+            errorMessage = "Échec du changement de mot de passe. Vérifiez les valeurs fournies.";
+        }
+    }
+}

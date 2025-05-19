@@ -1,8 +1,5 @@
-﻿@using Microsoft.EntityFrameworkCore.Metadata.Internal
-@using TechDispoB.Services
-@using TechDispoB.Services.Implementations
+﻿@using TechDispoB
 @using TechDispoB.Services.Interfaces
-@inject IAppService AppService
 @inject NavigationManager Navigation
 @inject IAuthService AuthService
 
@@ -16,58 +13,42 @@
 
 <div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
     <nav class="flex-column">
-        @if (isAuthenticated)
-        {
-             <div class="nav-item px-3">
-                <NavLink class="nav-link" href="@AppRoutes.Home" Match="NavLinkMatch.All">                 
-                    <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Accueil
-                </NavLink>
-            </div>
-            <div class="nav-item px-3">
-                <NavLink class="nav-link" href="@AppRoutes.Missions">
-                    <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Mission
-                </NavLink>
-            </div>
-            <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="@AppRoutes.Settings">
-                        <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Settings
+        <AuthorizeView>
+            <Authorized>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="@AppRoutes.Home" Match="NavLinkMatch.All">
+                        <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Accueil
                     </NavLink>
                 </div>
-        }
-        else
-        {
-            <div class="nav-item px-3">
-                <NavLink class="btn btn-primary" href="@AppRoutes.Login">Se connecter</NavLink>
-            </div>
-        }
-
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="@AppRoutes.Missions">
+                        <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Missions
+                    </NavLink>
+                </div>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="@AppRoutes.Settings">
+                        <span class="bi bi-gear-fill-nav-menu" aria-hidden="true"></span> Paramètres
+                    </NavLink>
+                </div>
+                <div class="nav-item px-3">
+                    <button class="btn btn-link nav-link" @onclick="Logout">
+                        <span class="bi bi-box-arrow-right-nav-menu" aria-hidden="true"></span> Se déconnecter
+                    </button>
+                </div>
+            </Authorized>
+            <NotAuthorized>
+                <div class="nav-item px-3">
+                    <NavLink class="btn btn-primary" href="@AppRoutes.Login">Se connecter</NavLink>
+                </div>
+            </NotAuthorized>
+        </AuthorizeView>
     </nav>
 </div>
-@code{
-    bool isAuthenticated = false;
 
-    protected override async Task OnInitializedAsync()
-    {
-        isAuthenticated = await AuthService.IsAuthenticated();
-        AppService.OnAuthStateChanged += HandleAuthStateChanged;
-    }
-    private async void HandleAuthStateChanged()
-    {
-        isAuthenticated = await AuthService.IsAuthenticated();
-        StateHasChanged(); // 🔥 Force la mise à jour de l'interface utilisateur
-    }
+@code {
     private async Task Logout()
     {
         await AuthService.Logout();
-        isAuthenticated = false;
-        StateHasChanged();
-    }
-    public void Dispose()
-    {
-        AppService.OnAuthStateChanged -= HandleAuthStateChanged;
-    }
-    protected override async Task OnParametersSetAsync()
-    {
-        isAuthenticated = await AuthService.IsAuthenticated();
+        Navigation.NavigateTo(AppRoutes.Login, forceLoad: true);
     }
 }

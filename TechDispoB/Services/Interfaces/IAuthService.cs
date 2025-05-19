@@ -11,5 +11,6 @@ namespace TechDispoB.Services.Interfaces
         Task<bool> IsAuthenticated();
         Task<bool> SendFCMTokenAsync(string fcmToken, string jwtToken);
         Task<bool> CanConnectToDatabase();
+        Task<bool> ChangerMotDePasse(ChangerMotDePasseDto dto);
     }
 }

@@ -193,14 +193,14 @@ namespace TechDispoB.Services.Implementations
         // 📥 Accepter une mission
         public async Task<bool> AccepterMission(int missionId)
         {
-            var url = string.Format(Apis.Missions.Accept, missionId);
+            var url = string.Format(Apis.Missions.Accepter, missionId);
             return await PostWithoutDataAsync(url);
         }
 
         // 📤 Refuser une mission
         public async Task<bool> RefuserMission(int missionId)
         {
-            var url = string.Format(Apis.Missions.Refuse, missionId);
+            var url = string.Format(Apis.Missions.Refuser, missionId);
             return await PostWithoutDataAsync(url);
         }
 

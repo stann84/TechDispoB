@@ -1,4 +1,5 @@
-﻿using System.Net.Http.Json;
+﻿using System.Net.Http.Headers;
+using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
 using TechDispoB.Models;
@@ -107,6 +108,25 @@ namespace TechDispoB.Services.Implementations
                 Console.WriteLine($"Erreur FCM : {ex.Message}");
                 return false;
             }
+        }
+
+        /// <summary>
+        /// Change le mot de passe de l'utilisateur actuellement authentifié.
+        /// </summary>
+        public async Task<bool> ChangerMotDePasse(ChangerMotDePasseDto dto)
+        {
+            // Récupère le token JWT stocké
+            var token = await SecureStorage.GetAsync("auth_token");
+            if (string.IsNullOrEmpty(token))
+                return false;
+
+            // Ajoute l'en-tête Authorization
+            _httpClient.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", token);
+
+            // Appelle l'API pour changer le mot de passe
+            var response = await _httpClient.PostAsJsonAsync(Apis.Users.ChangerMotDePasse, dto);
+            return response.IsSuccessStatusCode;
         }
     }
 }
