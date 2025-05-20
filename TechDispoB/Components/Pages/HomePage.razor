@@ -8,10 +8,15 @@
 @inject NavigationManager Navigation
 @inject IAuthService AuthService
 
-<h1>Paramètres</h1>
+<h1>Accueil</h1>
+
+<h3>Bonjour @user.UserName</h3>
+<h5>Vous êtes : @statutUser</h5>
+
+
 
 <h5>Connexion à la base de données : @connectionMessage</h5>
-<h5>Vous êtes : @statutUser</h5>
+
 
 
 @if (isUserConnected)

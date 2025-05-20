@@ -17,7 +17,7 @@
         // 📂 Routes pour les missions
         public static class Missions
         {
-            public const string Base = "mission"; // ex: api/mission
+            public const string Base = "mission"; 
             public const string List = "mission/list";
             public const string GetByUser = "mission/user";
             public const string Accepter = "mission/{0}/accepter";
