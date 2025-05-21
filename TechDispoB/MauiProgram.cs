@@ -8,12 +8,10 @@ using Plugin.Firebase.CloudMessaging;
 using Microsoft.Maui.LifecycleEvents;
 using TechDispoB.Services.Interfaces;
 
-
-
 #if IOS
     using Plugin.Firebase.Core.Platforms.iOS;
 #elif ANDROID
-    using Plugin.Firebase.Core.Platforms.Android;
+using Plugin.Firebase.Core.Platforms.Android;
 #endif
 
 namespace TechDispoB
@@ -33,13 +31,18 @@ namespace TechDispoB
 
             builder.Services.AddMauiBlazorWebView();
 
-            // HttpClient partagé pour tous les services
-            builder.Services.AddScoped(sp => HttpClientService.CreateHttpClient());
+            // injection de httpClientService pour appService et authService
 
-            // Enregistrer AppService en tant que Singleton
-            builder.Services.AddSingleton<IAppService, AppService>();
+            var baseUri = new Uri("https://2098-2a01-e0a-1d4-b530-ed35-8324-7d21-92ab.ngrok-free.app/api/");
 
-            builder.Services.AddSingleton<IAuthService, AuthService>();
+            builder.Services.AddHttpClient<IAppService, AppService>(client =>
+            {
+                client.BaseAddress = baseUri;
+            });
+            builder.Services.AddHttpClient<IAuthService, AuthService>(client =>
+            {
+                client.BaseAddress = baseUri;
+            });
 
 #if DEBUG
             builder.Services.AddBlazorWebViewDeveloperTools();

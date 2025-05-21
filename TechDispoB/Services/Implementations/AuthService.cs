@@ -16,44 +16,33 @@ namespace TechDispoB.Services.Implementations
         public AuthService(HttpClient httpClient)
         {
             _httpClient = httpClient;
+            Console.WriteLine($"✅ HttpClient base address = {_httpClient.BaseAddress}");
         }
 
-        // 📡 Vérifie si la base de données est accessible
-        public async Task<bool> CanConnectToDatabase()
-        {
-            try
-            {
-                var response = await _httpClient.GetAsync(Apis.Users.CheckDatabaseConnection);
-                return response.IsSuccessStatusCode;
-            }
-            catch
-            {
-                return false;
-            }
-        }
-        // 🔐 Vérifie si l'utilisateur est connecté
-
+        // 🔐 Vérifie si un token est stocké localement
         public async Task<bool> IsAuthenticated()
         {
             var token = await SecureStorage.GetAsync("auth_token");
             return !string.IsNullOrEmpty(token);
         }
 
-        // 🔐 Connexion de l'utilisateur
+        // 🔐 Connexion de l'utilisateur : envoie les identifiants à l'API et stocke le token
         public async Task<LoginResponseDto?> Login(LoginDto loginModel)
         {
             try
             {
+                Console.WriteLine($"🔐 Envoi LoginDto : {JsonSerializer.Serialize(loginModel)}");
                 var response = await _httpClient.PostAsJsonAsync(Apis.Users.Login, loginModel);
+                var raw = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"📡 Réponse brute API : {raw}");
 
                 if (!response.IsSuccessStatusCode)
                 {
-                    var errorContent = await response.Content.ReadAsStringAsync();
-                    Console.WriteLine($"Login failed : {response.StatusCode}, {errorContent}");
+                    Console.WriteLine($"❌ Échec HTTP : {response.StatusCode}");
                     return null;
                 }
 
-                var loginResponse = await response.Content.ReadFromJsonAsync<LoginResponseDto>(new JsonSerializerOptions
+                var loginResponse = JsonSerializer.Deserialize<LoginResponseDto>(raw, new JsonSerializerOptions
                 {
                     PropertyNameCaseInsensitive = true
                 });
@@ -75,8 +64,7 @@ namespace TechDispoB.Services.Implementations
             }
         }
 
-        /// 🛡️ Déconnexion de l'utilisateur
-
+        // 🔓 Déconnexion de l'utilisateur
         public async Task Logout()
         {
             await SecureStorage.SetAsync("auth_token", "");
@@ -84,8 +72,21 @@ namespace TechDispoB.Services.Implementations
             Console.WriteLine("Utilisateur déconnecté.");
         }
 
-        /// 🔥 Envoie du FCM Token
+        // 📡 Vérifie la connexion à la base de données côté API
+        public async Task<bool> CanConnectToDatabase()
+        {
+            try
+            {
+                var response = await _httpClient.GetAsync(Apis.Users.CheckDatabaseConnection);
+                return response.IsSuccessStatusCode;
+            }
+            catch
+            {
+                return false;
+            }
+        }
 
+        // 🔥 Envoie du token Firebase Cloud Messaging à l'API
         public async Task<bool> SendFCMTokenAsync(string fcmToken, string jwtToken)
         {
             try
@@ -94,13 +95,12 @@ namespace TechDispoB.Services.Implementations
                     return false;
 
                 _httpClient.DefaultRequestHeaders.Authorization =
-                    new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", jwtToken);
+                    new AuthenticationHeaderValue("Bearer", jwtToken);
 
                 var data = new UserDto { FCMToken = fcmToken };
                 var content = new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json");
 
                 var response = await _httpClient.PostAsync(Apis.Users.UpdateFCMToken, content);
-
                 return response.IsSuccessStatusCode;
             }
             catch (Exception ex)
@@ -110,21 +110,15 @@ namespace TechDispoB.Services.Implementations
             }
         }
 
-        /// <summary>
-        /// Change le mot de passe de l'utilisateur actuellement authentifié.
-        /// </summary>
+        // 🔑 Changement de mot de passe sécurisé
         public async Task<bool> ChangerMotDePasse(ChangerMotDePasseDto dto)
         {
-            // Récupère le token JWT stocké
             var token = await SecureStorage.GetAsync("auth_token");
-            if (string.IsNullOrEmpty(token))
-                return false;
+            if (string.IsNullOrEmpty(token)) return false;
 
-            // Ajoute l'en-tête Authorization
             _httpClient.DefaultRequestHeaders.Authorization =
                 new AuthenticationHeaderValue("Bearer", token);
 
-            // Appelle l'API pour changer le mot de passe
             var response = await _httpClient.PostAsJsonAsync(Apis.Users.ChangerMotDePasse, dto);
             return response.IsSuccessStatusCode;
         }
